@@ -4,8 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.media.Image;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         int idx = 1;
         while (idx <= maxDate) {
             RowData data = new RowData();
+            data.dateNum = idx;
 
             dataSet.add(data);
             idx = idx + 1;
@@ -50,6 +51,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     class RowData {
-        Image hogeImage;
+        int dateNum;
     }
 }

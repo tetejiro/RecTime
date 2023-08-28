@@ -6,11 +6,10 @@
     android:layout_height="wrap_content"
     android:layout_margin="12dp">
 
-    <ImageView
+    <TextView
         android:id="@+id/hoge_image_view"
         android:layout_width="100dp"
         android:layout_height="80dp"
-        android:src="@mipmap/ic_launcher"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

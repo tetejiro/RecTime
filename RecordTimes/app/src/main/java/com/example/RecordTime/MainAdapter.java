@@ -1,10 +1,11 @@
 package com.example.RecordTime;
 
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,11 +24,11 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
      * 一行分のデータ
      */
     static class MainViewHolder extends RecyclerView.ViewHolder {
-        ImageView hogeImage;
+        TextView dateBox;
 
         MainViewHolder(@NonNull View itemView) {
             super(itemView);
-            hogeImage = itemView.findViewById(R.id.hoge_image_view);
+            dateBox = itemView.findViewById(R.id.hoge_image_view);
         }
     }
 
@@ -59,6 +60,10 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
     @Override
     public void onBindViewHolder(@NonNull MainViewHolder holder, int position) {
         MainActivity.RowData rowData = this.rowDataList.get(position);
+
+//        holder.dateBox.setText(String.valueOf(rowData.dateNum));
+        holder.dateBox.setText(String.valueOf(rowData.dateNum));
+
     }
 
     /**
