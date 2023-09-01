@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Record Time</string>
+    <string name="month_fragment">month_fragment</string>
 </resources>
