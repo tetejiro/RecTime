@@ -3,6 +3,9 @@
     <string name="month_fragment">month_fragment</string>
     <string name="fuu">1</string>
     <string name="month">11月</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="date">date</string>
+    <string name="back"><![CDATA[<<]]></string>
+    <string name="post"><![CDATA[>>]]></string>
+    <string name="selected_date">selected_date</string>
 </resources>

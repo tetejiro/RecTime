@@ -3,6 +3,7 @@ package com.example.RecordTime;
 import static android.app.PendingIntent.getActivity;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -66,15 +68,22 @@ public class RecyclerView_Adapter extends RecyclerView.Adapter<RecyclerView_Adap
             @Override
             public void onClick(View view) {
                 TextView textView = (TextView)view;
+                FragmentActivity fragmentActivity = (FragmentActivity)view.getContext();
+                DateFragment dateFragment = new DateFragment();
 
-                FragmentActivity activity = (FragmentActivity)view.getContext();
+                // 日付画面フラグメントにパラメータを付与する(〇月・〇日)
+                Bundle bundle = new Bundle();
+                TextView monthView = fragmentActivity.findViewById(R.id.month);
+                bundle.putString("month", monthView.getText().toString());
+                bundle.putString("date", textView.getText().toString());
+                dateFragment.setArguments(bundle);
 
-                // 日付画面フラグメントを起動する（日付を渡す）
-                activity.getSupportFragmentManager()
+                // 日付画面フラグメントを起動する
+                fragmentActivity.getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.month_fragment_container, new DateFragment())
+                        .replace(R.id.month_fragment_container, dateFragment)
+                        .addToBackStack("date")
                         .commit();
-                Log.d("aaaaaaa", textView.getText().toString());
             }
         });
     }
