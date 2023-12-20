@@ -1,6 +1,5 @@
 package com.example.RecordTime;
 
-import android.content.Context;
 import android.icu.util.Calendar;
 import android.icu.util.GregorianCalendar;
 import android.os.Bundle;
@@ -14,8 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -38,19 +35,19 @@ public class MonthFragment extends Fragment {
 
         // 〇月を今月にする
         Integer month = this.dateLists.get(0).getMonth() + 1;
-        TextView tx = (TextView)view.findViewById(R.id.month);
+        TextView tx = view.findViewById(R.id.month);
         tx.setText(month.toString() + "月");
 
         // RecyclerView を生成して各日にちを生成
-        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_container);
+        RecyclerView recyclerView = view.findViewById(R.id.date_recycler_view_container);
         recyclerView.setHasFixedSize(true);
         // ①recycleView に layoutManager をセット
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 7));
         // ②Adapter を生成して RecyclerView にセット
-        recyclerView.setAdapter(new RecyclerView_Adapter(getActivity(), this.dateLists));
+        recyclerView.setAdapter(new Monthly_RecyclerView_Adapter(getActivity(), this.dateLists));
     }
 
-    // dateLists = [{DateList}, {}, {}...] を作成
+    // dateLists = [DateList, , ...] を作成
     private void dataInitialize() {
         this.dateLists = new ArrayList<DateList>(); // push する対象
 

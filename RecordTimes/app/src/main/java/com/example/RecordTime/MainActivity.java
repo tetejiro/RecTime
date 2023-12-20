@@ -1,14 +1,23 @@
 package com.example.RecordTime;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.room.Room;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
+
+import com.example.RecordTime.Room.Database;
+import com.example.RecordTime.Room.TimeTable_Dao;
+import com.example.RecordTime.Room.TimeTable_RoomEntity;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends FragmentActivity {
+
+    private List<TimeTable_RoomEntity> allTimeTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -9,6 +9,17 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
+
+import com.example.RecordTime.Room.Database;
+import com.example.RecordTime.Room.TimeTable_Dao;
+import com.example.RecordTime.Room.TimeTable_RoomEntity;
+
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class DateFragment extends Fragment {
 
@@ -24,12 +35,12 @@ public class DateFragment extends Fragment {
         View view = inflater.inflate(R.layout.date_fragment, container, false);
 
         // 〇月をセット
-        TextView month_textview = (TextView)view.findViewById(R.id.selected_month);
-        month_textview.setText(getArguments().getString("month").toString());
+        TextView month_textview = view.findViewById(R.id.selected_month);
+        month_textview.setText(getArguments().getString("month"));
 
         // 〇日をセット
-        TextView date_textview = (TextView)view.findViewById(R.id.selected_date);
-        date_textview.setText(getArguments().getString("date").toString());
+        TextView date_textview = view.findViewById(R.id.selected_date);
+        date_textview.setText(getArguments().getString("date"));
 
         return view;
     }
