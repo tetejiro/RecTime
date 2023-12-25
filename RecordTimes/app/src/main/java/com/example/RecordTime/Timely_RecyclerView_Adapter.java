@@ -1,58 +1,57 @@
 package com.example.RecordTime;
 
-import android.content.Context;
-import android.util.Log;
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.RecordTime.Room.TimeTable_RoomEntity;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class Timely_RecyclerView_Adapter extends RecyclerView.Adapter<Timely_RecyclerView_Adapter.ViewHolder> {
 
+    private final List<Item> itemList = new ArrayList<>();
 
-    //    ============= Adapter ===============
-    List<TimeTable_RoomEntity> allTimeTable;
-    Context context;
-
-    Timely_RecyclerView_Adapter(Context context, List<TimeTable_RoomEntity> allTimeTable) {
-        this.context = context;
-        this.allTimeTable = allTimeTable;
+    @SuppressLint("NotifyDataSetChanged")
+    void set(List<Item> newItemList) {
+        itemList.clear();
+        itemList.addAll(newItemList); //防御コピー
+        notifyDataSetChanged(); // Recycler Viewは、表示するリストの中身を更新するためにこのメソッドの呼び出しが必要。
     }
 
     @Override
     public int getItemCount() {
-        return this.allTimeTable.size();
+        return itemList.size();
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.textView.setText("this.allTimeTable.get(position).title");
+        holder.textView.setText(itemList.get(position).title);
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.time_viewholder, parent, false);
-        return new Timely_RecyclerView_Adapter.ViewHolder(view);
+        return new ViewHolder(parent);
     }
-    //    ============= Adapter ===============
 
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        private final TextView textView;
 
-    //    ============= viewHolder ============
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView textView;
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            this.textView = itemView.findViewById(R.id.time_view_holder);
+        private ViewHolder(@NonNull ViewGroup parent) {
+            super(LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_1, parent, false));
+            textView = itemView.findViewById(android.R.id.text1);
         }
     }
-    //    ============= viewHolder =============
+}
+
+class Item {
+    final String title;
+    Item(String title) {
+        this.title = title;
+    }
 }
 
