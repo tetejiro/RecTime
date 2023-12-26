@@ -16,9 +16,4 @@ public class TimeTable_RoomEntity {
     public int getId() {
         return this.id;
     }
-
-    public String getTitle() {
-        return this.title;
-    }
-
 }
