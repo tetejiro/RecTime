@@ -1,7 +1,5 @@
 package com.example.RecordTime;
 
-import static android.app.PendingIntent.getActivity;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -48,18 +46,18 @@ public class Monthly_RecyclerView_Adapter extends RecyclerView.Adapter<Monthly_R
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         // 各日付の曜日を取得
-        Integer year = this.DateList.get(position).getYear();
-        Integer month = this.DateList.get(position).getMonth();
-        Integer date = this.DateList.get(position).getDate();
+        int year = this.DateList.get(position).getYear();
+        int month = this.DateList.get(position).getMonth();
+        int date = this.DateList.get(position).getDate();
 
         Calendar cl = new GregorianCalendar(year, month, date);
-        Integer dayOfWeekNum = cl.get(Calendar.DAY_OF_WEEK);
+        int dayOfWeekNum = cl.get(Calendar.DAY_OF_WEEK);
 
-        String[] weekDays = {"", "日", "月", "火", "水", "木", "金", "土"};
+        String[] weekDays = {"", "(日)", "(月)", "(火)", "(水)", "(木)", "(金)", "(土)"};
         String dayOfWeek = weekDays[dayOfWeekNum];
 
         // 日付 + 曜日を出力
-        holder.dateBox.setText(date.toString() + dayOfWeek);
+        holder.dateBox.setText(date + dayOfWeek);
 
         holder.dateBox.setClickable(true);
         holder.dateBox.setOnClickListener(new View.OnClickListener() {

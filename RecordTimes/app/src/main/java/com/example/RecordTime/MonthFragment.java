@@ -36,7 +36,7 @@ public class MonthFragment extends Fragment {
         // 〇月を今月にする
         Integer month = this.dateLists.get(0).getMonth() + 1;
         TextView tx = view.findViewById(R.id.month);
-        tx.setText(month.toString() + "月");
+        tx.setText(month + "月");
 
         // RecyclerView を生成して各日にちを生成
         RecyclerView recyclerView = view.findViewById(R.id.date_recycler_view_container);
@@ -49,19 +49,52 @@ public class MonthFragment extends Fragment {
 
     // dateLists = [DateList, , ...] を作成
     private void dataInitialize() {
-        this.dateLists = new ArrayList<DateList>(); // push する対象
+        this.dateLists = new ArrayList<>(); // push する対象
 
         Calendar cl = new GregorianCalendar();
         int maxDate = cl.getActualMaximum(Calendar.DATE); // 今月の最大日数
         int year = cl.get(Calendar.YEAR);
         int month = cl.get(Calendar.MONTH);
 
-        int idx = 1;
-        // 日数分のクラスを作って、配列に add する。
-        while (idx <= maxDate) {
-            DateList d = new DateList(year, month, idx);
-            this.dateLists.add(d);
+        // 今月1日のインスタンス
+        Calendar today = new GregorianCalendar(year, month, 1);
+        // 今月1日の曜日
+        int first_day_of_week = today.get(Calendar.DAY_OF_WEEK);
+        // 今月最終日の曜日
+        int last_day_of_week = new GregorianCalendar(year, month, maxDate).get(Calendar.DAY_OF_WEEK);
+        // 先月の最大日数
+        int preMaxDate = new GregorianCalendar(year, month-1, 1)
+                                    .getActualMaximum(Calendar.DATE);
+
+        int[] weekDays = {0, 0, 1, 2, 3, 4, 5, 6};
+
+        // 日数分(とその前後)の日付クラスを作って、配列に add する。
+        this.dateLists = new ArrayList<>();
+        int idx = 0;
+        // （マイナス）1日よりも前に表示する日数
+        int before_first_day = - weekDays[first_day_of_week];
+
+        // 1日よりも前の日付生成
+        if(before_first_day <= 0) {
+            while(before_first_day < 0) {
+                this.dateLists.add(new DateList(year, month - 1, preMaxDate + before_first_day + 1));
+                before_first_day++;
+            }
             idx++;
+        }
+        // その月の日付生成
+        while(idx <= maxDate) {
+            this.dateLists.add(new DateList(year, month, idx));
+            idx++;
+        }
+        // 来月の日付生成
+        int rest = weekDays[last_day_of_week] + 1;
+        idx = 1;
+        // 先月の最終週との合計　14日分の日付を生成する。
+        while (14 - rest > 0) {
+            this.dateLists.add(new DateList(year, month + 1, idx));
+            idx++;
+            rest++;
         }
     }
 

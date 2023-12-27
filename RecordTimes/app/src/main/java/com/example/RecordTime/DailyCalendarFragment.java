@@ -12,6 +12,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
+
+import com.example.RecordTime.Rooms.Database;
+import com.example.RecordTime.Rooms.TimeTable;
+import com.example.RecordTime.Rooms.TimeTable_Dao;
+import com.example.RecordTime.Rooms.TimeTable_RoomEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,12 +51,7 @@ public class DailyCalendarFragment extends Fragment {
 
     private void loadDB() {
         executor.submit(() -> {
-            List<Item> itemList = new ArrayList<>();
-            itemList.add(new Item("0番目のtitle"));
-            itemList.add(new Item("1番目のtitle"));
-            itemList.add(new Item("2番目のtitle"));
-
-            handler.post(() -> adapter.set(itemList));
+//            handler.post(() -> adapter.load());
         });
     }
 }

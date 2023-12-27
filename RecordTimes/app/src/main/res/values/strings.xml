@@ -7,6 +7,10 @@
     <string name="date">date</string>
     <string name="back"><![CDATA[<<]]></string>
     <string name="post"><![CDATA[>>]]></string>
-    <string name="selected_date">selected_date</string>
+    <string name="selected_date">1</string>
     <string name="time_view_holder">time_view_holder</string>
+    <string name="start">開始</string>
+    <string name="end">終了</string>
+    <string name="sample">sample</string>
+    <string name="hint">hint</string>
 </resources>

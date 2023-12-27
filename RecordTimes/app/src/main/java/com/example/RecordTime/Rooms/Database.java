@@ -1,4 +1,4 @@
-package com.example.RecordTime.Room;
+package com.example.RecordTime.Rooms;
 
 import androidx.room.RoomDatabase;
 

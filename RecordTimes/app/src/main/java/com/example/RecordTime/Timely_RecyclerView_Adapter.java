@@ -8,19 +8,26 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.RecordTime.Rooms.TimeTable_RoomEntity;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Timely_RecyclerView_Adapter extends RecyclerView.Adapter<Timely_RecyclerView_Adapter.ViewHolder> {
 
-    private final List<Item> itemList = new ArrayList<>();
+    private final List<TimeTable_RoomEntity> itemList = new ArrayList<>();
 
     @SuppressLint("NotifyDataSetChanged")
-    void set(List<Item> newItemList) {
-        itemList.clear();
-        itemList.addAll(newItemList); //防御コピー
-        // Recycler Viewは、表示するリストの中身を更新するためにこのメソッドの呼び出しが必要。
+    void init() {
         notifyDataSetChanged();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    void load(List<TimeTable_RoomEntity> newItemList) {
+//        itemList.clear();
+//        itemList.addAll(newItemList); //防御コピー
+//        // Recycler Viewは、表示するリストの中身を更新するためにこのメソッドの呼び出しが必要。
+//        notifyDataSetChanged();
     }
 
     @Override
@@ -49,11 +56,3 @@ public class Timely_RecyclerView_Adapter extends RecyclerView.Adapter<Timely_Rec
         }
     }
 }
-
-class Item {
-    final String title;
-    Item(String title) {
-        this.title = title;
-    }
-}
-

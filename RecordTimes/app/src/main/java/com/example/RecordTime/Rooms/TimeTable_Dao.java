@@ -1,4 +1,4 @@
-package com.example.RecordTime.Room;
+package com.example.RecordTime.Rooms;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
@@ -9,6 +9,9 @@ import java.util.List;
 @Dao
 public interface TimeTable_Dao {
 
+    @Insert
+    void insert(TimeTable_RoomEntity timeTable_roomEntity);
+
     @Query("select * from TimeTable")
     List<TimeTable_RoomEntity> getAll();
 
@@ -17,7 +20,4 @@ public interface TimeTable_Dao {
 
     @Query("delete from TimeTable where id = :x")
     void delete(int x);
-
-    @Insert
-    void insert(TimeTable_RoomEntity timeTable_roomEntity);
 }

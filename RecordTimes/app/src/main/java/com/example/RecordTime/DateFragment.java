@@ -1,7 +1,6 @@
 package com.example.RecordTime;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,17 +8,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
-
-import com.example.RecordTime.Room.Database;
-import com.example.RecordTime.Room.TimeTable_Dao;
-import com.example.RecordTime.Room.TimeTable_RoomEntity;
-
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class DateFragment extends Fragment {
 
