@@ -1,6 +1,5 @@
 package com.example.RecordTime;
 
-import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -10,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,8 +82,8 @@ public class MonthFragment extends Fragment {
 
         this.view = view;
 
-        // 先月・来月への移動・それに関連する一連の処理
-        setMonthOperable();
+        // 先月・来月への移動・それに関連する一連の処理・各日付の押下時の処理
+        setButtonOperable();
 
         // 〇年・〇月をセット（setMonthOperable の中でも使用されている）
         setYearMonthText();
@@ -97,17 +95,7 @@ public class MonthFragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
-    public void setYearMonthText() {
-        // 〇年
-        TextView year_text = this.view.findViewById(R.id.year);
-        year_text.setText(yearMonth.getYear() + "年");
-
-        // 〇月
-        TextView month_text = this.view.findViewById(R.id.month);
-        month_text.setText(yearMonth.getMonthValue() + "月");
-    }
-
-    public void setMonthOperable() {
+    public void setButtonOperable() {
         Button nextButton = view.findViewById(R.id.next);
         nextButton.setOnClickListener(view -> {
             yearMonth = yearMonth.plusMonths(1);
@@ -127,13 +115,23 @@ public class MonthFragment extends Fragment {
         });
     }
 
+    public void setYearMonthText() {
+        // 〇年
+        TextView year_text = this.view.findViewById(R.id.year);
+        year_text.setText(yearMonth.getYear() + "年");
+
+        // 〇月
+        TextView month_text = this.view.findViewById(R.id.month);
+        month_text.setText(yearMonth.getMonthValue() + "月");
+    }
+
     // =========================== Adapter ==============================
     class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
         // =========================== ViewHolder start ==============================
         public class ViewHolder extends RecyclerView.ViewHolder {
 
-            TextView textView;
+            Button dateButton;
 
             LocalDate date;
 
@@ -141,7 +139,25 @@ public class MonthFragment extends Fragment {
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
-                this.textView = itemView.findViewById(R.id.every_date);
+                this.dateButton = itemView.findViewById(R.id.every_date);
+
+                // 日付押下時の処理
+                dateButton.setOnClickListener(view -> {
+
+                    // 日付情報を渡す
+                    Bundle result = new Bundle();
+                    result.putInt("year", date.getYear());
+                    result.putInt("month", date.getMonthValue());
+                    result.putInt("date", date.getDayOfMonth());
+                    getParentFragmentManager().setFragmentResult("date", result);
+
+                    // 日付フラグメントとの交換
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
+                            .replace(R.id.activity_fragment_container, new DateFragment())
+                            .addToBackStack("MonthFragment")
+                            .commit();
+                });
             }
         }
 
@@ -170,27 +186,28 @@ public class MonthFragment extends Fragment {
             // 月の最終日
             int lastDate = localDate.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
 
+            // 曜日・日付の表示・色を付ける
             if(position < 7) {
-                holder.textView.setText(week[position]);
-                holder.textView.setTextColor(Color.BLACK);
-                holder.textView.setBackgroundColor(Color.rgb(237,231,246));
+                holder.dateButton.setText(week[position]);
+                holder.dateButton.setTextColor(Color.BLACK);
+                holder.dateButton.setBackgroundColor(Color.rgb(237,231,246));
             } else {
                 // position - 7 - dayOfWeek：曜日の列(7) と 先月分(曜日分)からスタートする
                 holder.date = localDate.plusDays(position - 7 - dayOfWeek);
-                holder.textView.setText(String.valueOf(holder.date.getDayOfMonth()));
+                holder.dateButton.setText(String.valueOf(holder.date.getDayOfMonth()));
                 holder.dayOfWeek = holder.date.getDayOfWeek().getValue();
 
-                // 当日
-                if (holder.date.isEqual(LocalDate.now())) holder.textView.setBackgroundColor(Color.rgb(185,246,202));
+                // 当日：緑
+                if (holder.date.isEqual(LocalDate.now())) holder.dateButton.setBackgroundColor(Color.rgb(185,246,202));
 
                 // 日曜：赤 ・ 土曜：青
-                if (holder.dayOfWeek == 7) holder.textView.setTextColor(Color.RED);
-                else if (holder.dayOfWeek == 6) holder.textView.setTextColor(Color.BLUE);
+                if (holder.dayOfWeek == 7) holder.dateButton.setTextColor(Color.RED);
+                else if (holder.dayOfWeek == 6) holder.dateButton.setTextColor(Color.BLUE);
 
                 // 先月：グレー
-                if (position - 7 - dayOfWeek < 0) holder.textView.setTextColor(Color.GRAY);
+                if (position - 7 - dayOfWeek < 0) holder.dateButton.setTextColor(Color.GRAY);
                 // 来月：グレー
-                if (lastDate < (position + 1) - 7 - dayOfWeek) holder.textView.setTextColor(Color.GRAY);
+                if (lastDate < (position + 1) - 7 - dayOfWeek) holder.dateButton.setTextColor(Color.GRAY);
             }
         }
 

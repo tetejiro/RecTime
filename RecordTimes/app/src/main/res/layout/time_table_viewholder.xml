@@ -4,10 +4,11 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/time_view_holder"
+        android:id="@+id/time_table_view_holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:ems="10"
         android:text="@string/time_view_holder" />
+
 </LinearLayout>
