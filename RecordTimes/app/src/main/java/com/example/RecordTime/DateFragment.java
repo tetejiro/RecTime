@@ -1,5 +1,6 @@
 package com.example.RecordTime;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,12 +16,21 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
+
+import com.example.RecordTime.Rooms.AppDatabase;
+import com.example.RecordTime.Rooms.TimeTableDao;
+import com.example.RecordTime.Rooms.TimeTableEntity;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class DateFragment extends Fragment {
 
-    private static final String LOCAL_DATE = "LocalDate";
-
-    Adapter adapter = new Adapter();
+    List<TimeTableEntity> timeTableEntities;
+    List<TimeTableEntity> returnedTimeTableEntities = new ArrayList<>();
+    TimeTableDao timeTableDao;
 
     View view;
 
@@ -31,6 +41,11 @@ public class DateFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        timeTableEntities = new ArrayList<>();
+        timeTableEntities.add(new TimeTableEntity("0番名のレコード"));
+        timeTableEntities.add(new TimeTableEntity("1番名のレコード"));
+        timeTableEntities.add(new TimeTableEntity("2番名のレコード"));
 
         getParentFragmentManager().setFragmentResultListener("date", this, new FragmentResultListener() {
 
@@ -50,7 +65,7 @@ public class DateFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.date_fragment, container, false);
+        return inflater.inflate(R.layout.fragment_date, container, false);
     }
 
     @Override
@@ -58,11 +73,33 @@ public class DateFragment extends Fragment {
 
         this.view = view;
 
-        // RecyclerView をセット
-        RecyclerView recyclerView = view.findViewById(R.id.time_table_recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(adapter);
+        Thread thread = new Thread(new Query());
+        thread.start();
+
+        try {
+            thread.join();
+
+            // RecyclerView をセット
+            RecyclerView recyclerView = view.findViewById(R.id.time_table_recycler_view);
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            recyclerView.setAdapter(new Adapter());
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public class Query implements Runnable {
+
+        @Override
+        public void run() {
+            AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
+                    AppDatabase.class, "TimeTable").build();
+            timeTableDao = database.timeTableDao();
+            timeTableDao.insertAll(timeTableEntities);
+            returnedTimeTableEntities = timeTableDao.getAll();
+        }
     }
 
     public void setDateText() {
@@ -80,30 +117,36 @@ public class DateFragment extends Fragment {
         date_text.setText(date + " 日");
     }
 
-    class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
-        class ViewHolder extends RecyclerView.ViewHolder {
+        public class ViewHolder extends RecyclerView.ViewHolder {
+
+            TextView textView;
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
+
+                this.textView = itemView.findViewById(R.id.every_time_table);
             }
         }
 
         @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.time_table_viewholder, parent, false);
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_time_table, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            holder.textView.setText(timeTableEntities.get(position).title + " / " + timeTableEntities.get(position).datetime.toString());
+            if (timeTableEntities.get(position).done) holder.textView.setBackgroundColor(Color.rgb(124,252,0)); // 赤
+            else holder.textView.setBackgroundColor(Color.rgb(249,247,57)); // 黄色
         }
 
         @Override
         public int getItemCount() {
-            return 0;
+            return timeTableEntities.size();
         }
     }
 }

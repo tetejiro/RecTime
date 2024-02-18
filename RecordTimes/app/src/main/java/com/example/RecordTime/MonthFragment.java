@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,15 +31,6 @@ public class MonthFragment extends Fragment {
     YearMonth yearMonth = YearMonth.now();
     View view;
     Adapter adapter = new Adapter();
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
-//
-//    // TODO: Rename and change types of parameters
-//    private String mParam1;
-//    private String mParam2;
 
     /**
      * Use this factory method to create a new instance of
@@ -62,10 +54,6 @@ public class MonthFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
     }
 
     // onCreate の後に呼び出され Viewを生成して返す
@@ -73,7 +61,7 @@ public class MonthFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.month_fragment, container, false);
+        return inflater.inflate(R.layout.fragment_month, container, false);
     }
 
     // Viewが生成された後に呼び出し・Viewの初期化とFragmentの状態の復元
@@ -167,7 +155,7 @@ public class MonthFragment extends Fragment {
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.date_viewholder, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_date, parent, false);
             return new ViewHolder(view);
         }
 
