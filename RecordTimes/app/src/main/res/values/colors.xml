@@ -4,4 +4,5 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="ghostwhite">#f8f8ff</color>
+    <color name="weekofday">#F2F2F2</color>
 </resources>

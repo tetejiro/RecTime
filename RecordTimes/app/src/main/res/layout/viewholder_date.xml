@@ -8,11 +8,11 @@
 
     <Button
         android:id="@+id/every_date"
-        android:layout_width="54dp"
-        android:layout_height="70dp"
+        android:layout_width="60dp"
+        android:layout_height="118dp"
         android:background="@color/white"
         android:clickable="true"
-        android:gravity="center_vertical|center_horizontal"
+        android:gravity="top|left"
         android:text="@string/fuu"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"

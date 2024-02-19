@@ -11,15 +11,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/time_table_recycler_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/selected_year"
-            android:layout_width="100dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/fuu"
@@ -27,7 +29,7 @@
 
         <TextView
             android:id="@+id/selected_month"
-            android:layout_width="100dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/fuu"
@@ -35,7 +37,7 @@
 
         <TextView
             android:id="@+id/selected_date"
-            android:layout_width="100dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/fuu"
@@ -45,24 +47,25 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/time_table_recycler_view"
         android:layout_width="300dp"
-        android:layout_height="400dp"
+        android:layout_height="500dp"
         android:layout_gravity="top"
+        android:layout_margin="30dp"
+        android:layout_marginTop="32dp"
         android:background="@drawable/border"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+        app:layout_constraintBottom_toBottomOf="@+id/contents"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contents" />
+        app:layout_constraintTop_toTopOf="@+id/linearLayout" />
 
     <EditText
         android:id="@+id/contents"
         android:layout_width="280dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginTop="50dp"
         android:autofillHints="no"
-        android:gravity="start|top"
         android:hint="@string/hint"
         android:inputType="textMultiLine"
-        app:layout_constraintBottom_toBottomOf="@+id/liner_layout"
+        app:layout_constraintBottom_toTopOf="@+id/liner_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/time_table_recycler_view" />
@@ -73,10 +76,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         android:gravity="center|bottom"
-        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/contents">
 
         <Button

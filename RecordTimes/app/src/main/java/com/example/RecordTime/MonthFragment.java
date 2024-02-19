@@ -163,8 +163,6 @@ public class MonthFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-            String[] week = {"日", "月", "火", "水", "木", "金", "土"};
-
             // 月の初日
             LocalDate localDate = LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(), 1);
 
@@ -175,34 +173,28 @@ public class MonthFragment extends Fragment {
             int lastDate = localDate.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
 
             // 曜日・日付の表示・色を付ける
-            if(position < 7) {
-                holder.dateButton.setText(week[position]);
-                holder.dateButton.setTextColor(Color.BLACK);
-                holder.dateButton.setBackgroundColor(Color.rgb(237,231,246));
-            } else {
-                // position - 7 - dayOfWeek：曜日の列(7) と 先月分(曜日分)からスタートする
-                holder.date = localDate.plusDays(position - 7 - dayOfWeek);
-                holder.dateButton.setText(String.valueOf(holder.date.getDayOfMonth()));
-                holder.dayOfWeek = holder.date.getDayOfWeek().getValue();
+            // position - dayOfWeek 先月分(曜日分)からスタートする
+            holder.date = localDate.plusDays(position - dayOfWeek);
+            holder.dateButton.setText(String.valueOf(holder.date.getDayOfMonth()));
+            holder.dayOfWeek = holder.date.getDayOfWeek().getValue();
 
-                // 当日：緑
-                if (holder.date.isEqual(LocalDate.now())) holder.dateButton.setBackgroundColor(Color.rgb(185,246,202));
+            // 当日：緑
+            if (holder.date.isEqual(LocalDate.now())) holder.dateButton.setBackgroundColor(Color.rgb(185,246,202));
 
-                // 日曜：赤 ・ 土曜：青
-                if (holder.dayOfWeek == 7) holder.dateButton.setTextColor(Color.RED);
-                else if (holder.dayOfWeek == 6) holder.dateButton.setTextColor(Color.BLUE);
+            // 日曜：赤 ・ 土曜：青
+            if (holder.dayOfWeek == 7) holder.dateButton.setTextColor(Color.RED);
+            else if (holder.dayOfWeek == 6) holder.dateButton.setTextColor(Color.BLUE);
 
-                // 先月：グレー
-                if (position - 7 - dayOfWeek < 0) holder.dateButton.setTextColor(Color.GRAY);
-                // 来月：グレー
-                if (lastDate < (position + 1) - 7 - dayOfWeek) holder.dateButton.setTextColor(Color.GRAY);
-            }
+            // 先月：グレー
+            if (position - dayOfWeek < 0) holder.dateButton.setTextColor(Color.GRAY);
+            // 来月：グレー
+            if (lastDate < (position + 1) - dayOfWeek) holder.dateButton.setTextColor(Color.GRAY);
         }
 
         // 繰り返す回数
         @Override
         public int getItemCount() {
-            return 7 + 7 * 6;
+            return 7 * 6;
         }
     }
 }
