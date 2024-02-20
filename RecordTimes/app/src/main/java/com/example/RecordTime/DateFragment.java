@@ -1,7 +1,5 @@
 package com.example.RecordTime;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -39,10 +37,10 @@ public class DateFragment extends Fragment {
 
     List<TimeTableEntity> timeTableEntities;
     List<TimeTableEntity> returnedTimeTableEntities = new ArrayList<>();
+
     TimeTableDao timeTableDao;
 
     InputMethodManager inputMethodManager;
-    ConstraintLayout constraintLayout;
 
     View view;
 
@@ -104,9 +102,9 @@ public class DateFragment extends Fragment {
             throw new RuntimeException(e);
         }
 
-        //キーボード表示を制御するためのオブジェクト
-        constraintLayout = view.findViewById(R.id.constraint_layout_date);
-
+        // TODO: キーボードを隠す処理をまとめたい
+        // 背景押下時キーボードを隠す：フラグメント以外
+        ConstraintLayout constraintLayout = view.findViewById(R.id.constraint_layout_date);
         constraintLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -115,6 +113,20 @@ public class DateFragment extends Fragment {
                 inputMethodManager.hideSoftInputFromWindow(constraintLayout.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 //背景にフォーカスを移す
                 constraintLayout.requestFocus();
+                return false;
+            }
+        });
+
+        // 背景押下時キーボードを隠す：フラグメント内
+        RecyclerView recyclerView = view.findViewById(R.id.time_table_recycler_view);
+        recyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                //キーボードを隠す
+                inputMethodManager.hideSoftInputFromWindow(recyclerView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                //背景にフォーカスを移す
+                recyclerView.requestFocus();
                 return false;
             }
         });
