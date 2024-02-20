@@ -134,9 +134,7 @@ public class MonthFragment extends Fragment {
 
                     // 日付情報を渡す
                     Bundle result = new Bundle();
-                    result.putInt("year", date.getYear());
-                    result.putInt("month", date.getMonthValue());
-                    result.putInt("date", date.getDayOfMonth());
+                    result.putSerializable("date", date);
                     getParentFragmentManager().setFragmentResult("date", result);
 
                     // 日付フラグメントとの交換
@@ -181,14 +179,10 @@ public class MonthFragment extends Fragment {
             // 当日：緑
             if (holder.date.isEqual(LocalDate.now())) holder.dateButton.setBackgroundColor(Color.rgb(185,246,202));
 
-            // 日曜：赤 ・ 土曜：青
-            if (holder.dayOfWeek == 7) holder.dateButton.setTextColor(Color.RED);
-            else if (holder.dayOfWeek == 6) holder.dateButton.setTextColor(Color.BLUE);
-
             // 先月：グレー
             if (position - dayOfWeek < 0) holder.dateButton.setTextColor(Color.GRAY);
             // 来月：グレー
-            if (lastDate < (position + 1) - dayOfWeek) holder.dateButton.setTextColor(Color.GRAY);
+            if (lastDate < (position + 1) - dayOfWeek) holder.dateButton.setTextColor(Color.rgb(189,189,189));
         }
 
         // 繰り返す回数

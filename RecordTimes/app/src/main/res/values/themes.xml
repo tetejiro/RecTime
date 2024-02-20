@@ -3,6 +3,8 @@
     <style name="Base.Theme.RecordTime" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <item name="android:statusBarColor">@color/themes</item>
     </style>
 
     <style name="Theme.RecordTime" parent="Base.Theme.RecordTime" />

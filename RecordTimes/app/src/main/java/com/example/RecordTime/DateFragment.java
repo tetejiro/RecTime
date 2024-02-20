@@ -1,5 +1,7 @@
 package com.example.RecordTime;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +24,7 @@ import com.example.RecordTime.Rooms.AppDatabase;
 import com.example.RecordTime.Rooms.TimeTableDao;
 import com.example.RecordTime.Rooms.TimeTableEntity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -48,19 +51,6 @@ public class DateFragment extends Fragment {
         timeTableEntities.add(new TimeTableEntity("0番名のレコード"));
         timeTableEntities.add(new TimeTableEntity("1番名のレコード"));
         timeTableEntities.add(new TimeTableEntity("2番名のレコード"));
-
-        getParentFragmentManager().setFragmentResultListener("date", this, new FragmentResultListener() {
-
-            @Override
-            public void onFragmentResult(@NonNull String key, @NonNull Bundle bundle) {
-                year = bundle.getInt("year");
-                month = bundle.getInt("month");
-                date = bundle.getInt("date");
-
-                // 〇年・〇月・〇日をセット
-                setDateText();
-            }
-        });
     }
 
     @Override
@@ -74,6 +64,20 @@ public class DateFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
         this.view = view;
+
+        getParentFragmentManager().setFragmentResultListener("date", this, new FragmentResultListener() {
+
+            @Override
+            public void onFragmentResult(@NonNull String key, @NonNull Bundle bundle) {
+                LocalDate localDate = (LocalDate) bundle.getSerializable("date");
+                year = localDate.getYear();
+                month = localDate.getMonthValue();
+                date = localDate.getDayOfMonth();
+
+                // 〇年・〇月・〇日をセット
+                setDateText();
+            }
+        });
 
         Thread thread = new Thread(new Query());
         thread.start();
@@ -141,9 +145,14 @@ public class DateFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            holder.textView.setText(timeTableEntities.get(position).title + " / " + timeTableEntities.get(position).datetime.toString());
+            holder.textView.setText(timeTableEntities.get(position).title + " / " + formatDateTime(timeTableEntities.get(position).datetime));
             if (timeTableEntities.get(position).done) holder.textView.setBackgroundColor(Color.rgb(124,252,0)); // 赤
             else holder.textView.setBackgroundColor(Color.rgb(249,247,57)); // 黄色
+        }
+
+        private String formatDateTime(LocalDateTime date) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            return date.format(formatter);
         }
 
         @Override
