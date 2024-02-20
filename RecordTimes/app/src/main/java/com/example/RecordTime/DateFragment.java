@@ -2,17 +2,21 @@ package com.example.RecordTime;
 
 import static androidx.core.content.ContextCompat.getSystemService;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import androidx.fragment.app.FragmentResultListener;
@@ -37,6 +41,9 @@ public class DateFragment extends Fragment {
     List<TimeTableEntity> returnedTimeTableEntities = new ArrayList<>();
     TimeTableDao timeTableDao;
 
+    InputMethodManager inputMethodManager;
+    ConstraintLayout constraintLayout;
+
     View view;
 
     int year;
@@ -51,6 +58,8 @@ public class DateFragment extends Fragment {
         timeTableEntities.add(new TimeTableEntity("0番名のレコード"));
         timeTableEntities.add(new TimeTableEntity("1番名のレコード"));
         timeTableEntities.add(new TimeTableEntity("2番名のレコード"));
+
+        inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
     }
 
     @Override
@@ -94,6 +103,21 @@ public class DateFragment extends Fragment {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        //キーボード表示を制御するためのオブジェクト
+        constraintLayout = view.findViewById(R.id.constraint_layout_date);
+
+        constraintLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                //キーボードを隠す
+                inputMethodManager.hideSoftInputFromWindow(constraintLayout.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                //背景にフォーカスを移す
+                constraintLayout.requestFocus();
+                return false;
+            }
+        });
     }
 
     public class Query implements Runnable {

@@ -4,7 +4,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="ghostwhite">#f8f8ff</color>
-    <color name="weekofday">#f1e9ea</color>
+    <color name="week_of_day">#f1e9ea</color>
     <color name="white_gray">#FAFAFA</color>
     <color name="themes">#D7CCC8</color>
 </resources>

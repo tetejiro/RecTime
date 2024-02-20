@@ -176,8 +176,8 @@ public class MonthFragment extends Fragment {
             holder.dateButton.setText(String.valueOf(holder.date.getDayOfMonth()));
             holder.dayOfWeek = holder.date.getDayOfWeek().getValue();
 
-            // 当日：緑
-            if (holder.date.isEqual(LocalDate.now())) holder.dateButton.setBackgroundColor(Color.rgb(185,246,202));
+            // 今日：背景ON
+            if (holder.date.isEqual(LocalDate.now())) holder.dateButton.setBackgroundColor(Color.rgb(223,204,204));
 
             // 先月：グレー
             if (position - dayOfWeek < 0) holder.dateButton.setTextColor(Color.GRAY);
