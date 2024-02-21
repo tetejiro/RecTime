@@ -3,6 +3,7 @@ package com.example.RecordTime;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -55,11 +56,6 @@ public class DateFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        timeTableEntities = new ArrayList<>();
-        timeTableEntities.add(new TimeTableEntity("0番名のレコード"));
-        timeTableEntities.add(new TimeTableEntity("1番名のレコード"));
-        timeTableEntities.add(new TimeTableEntity("2番名のレコード"));
 
         inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -136,8 +132,7 @@ public class DateFragment extends Fragment {
             AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
                     AppDatabase.class, "TimeTable").build();
             timeTableDao = database.timeTableDao();
-            timeTableDao.insertAll(timeTableEntities);
-            returnedTimeTableEntities = timeTableDao.getAll();
+            returnedTimeTableEntities.addAll(timeTableDao.getAll());
         }
     }
 
@@ -178,8 +173,9 @@ public class DateFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            holder.textView.setText(timeTableEntities.get(position).title + " / " + formatDateTime(timeTableEntities.get(position).datetime));
-            if (timeTableEntities.get(position).done) holder.textView.setBackgroundColor(Color.rgb(124,252,0)); // 赤
+            TimeTableEntity rec = returnedTimeTableEntities.get(position);
+            holder.textView.setText(String.valueOf(rec.id) + "/" + rec.title + " / " + formatDateTime(rec.datetime));
+            if (returnedTimeTableEntities.get(position).done) holder.textView.setBackgroundColor(Color.rgb(124,252,0)); // 赤
             else holder.textView.setBackgroundColor(Color.rgb(249,247,57)); // 黄色
         }
 
@@ -190,7 +186,7 @@ public class DateFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return timeTableEntities.size();
+            return returnedTimeTableEntities.size();
         }
     }
 }

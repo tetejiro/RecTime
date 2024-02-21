@@ -111,11 +111,6 @@ public class MonthFragment extends Fragment {
 
                 // 日付押下時の処理
                 dateButton.setOnClickListener(view -> {
-//
-//                    // 日付情報を渡す
-//                    Bundle result = new Bundle();
-//                    result.putSerializable("date", date);
-//                    getParentFragmentManager().setFragmentResult("date", result);
 
                     // 日付フラグメントとの交換
                     getActivity().getSupportFragmentManager().beginTransaction()
