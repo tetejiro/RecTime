@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,35 +19,16 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.TemporalAdjusters;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@li MonthFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
+
 public class MonthFragment extends Fragment {
 
     YearMonth yearMonth = YearMonth.now();
     View view;
     Adapter adapter = new Adapter();
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @para param1 Parameter 1.
-     * @para param2 Parameter 2.
-     * @return A new instance of fragment MonthFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-//    public static MonthFragment newInstance(String param1, String param2) {
-//        MonthFragment fragment = new MonthFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
+    public static MonthFragment newInstance() {
+        return new MonthFragment();
+    }
 
     // Fragmentが作成されたときに起動・Fragmentが生存する間必要な処理を初期化
     @Override
@@ -131,16 +111,16 @@ public class MonthFragment extends Fragment {
 
                 // 日付押下時の処理
                 dateButton.setOnClickListener(view -> {
-
-                    // 日付情報を渡す
-                    Bundle result = new Bundle();
-                    result.putSerializable("date", date);
-                    getParentFragmentManager().setFragmentResult("date", result);
+//
+//                    // 日付情報を渡す
+//                    Bundle result = new Bundle();
+//                    result.putSerializable("date", date);
+//                    getParentFragmentManager().setFragmentResult("date", result);
 
                     // 日付フラグメントとの交換
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
-                            .replace(R.id.activity_fragment_container, new DateFragment())
+                            .replace(R.id.activity_fragment_container, DateFragment.newInstance(date))
                             .addToBackStack("MonthFragment")
                             .commit();
                 });
