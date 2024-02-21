@@ -53,6 +53,7 @@
             android:layout_height="680dp"
             android:layout_below="@+id/linearLayout"
             android:layout_alignParentBottom="true"
+            android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/linearLayout" />
 

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity(tableName = "time_table")
 public class TimeTableEntity {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     public int id;
 
     @ColumnInfo(name = "title")

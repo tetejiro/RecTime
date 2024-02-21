@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
-import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -42,22 +41,31 @@ public class DateFragment extends Fragment {
 
     InputMethodManager inputMethodManager;
 
-    View view;
-
     int year;
     int month;
-    int date;
+    int day;
+
+    public static DateFragment newInstance(LocalDate localDate) {
+        DateFragment fragment = new DateFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("date", localDate);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        timeTableEntities = new ArrayList<>();
-        timeTableEntities.add(new TimeTableEntity("0番名のレコード"));
-        timeTableEntities.add(new TimeTableEntity("1番名のレコード"));
-        timeTableEntities.add(new TimeTableEntity("2番名のレコード"));
-
         inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        // 〇年・〇月・〇日をセット
+        if (getArguments() != null) {
+            LocalDate localDate = (LocalDate) getArguments().getSerializable("date");
+            year = localDate.getYear();
+            month = localDate.getMonthValue();
+            day = localDate.getDayOfMonth();
+        }
     }
 
     @Override
@@ -70,21 +78,7 @@ public class DateFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
-        this.view = view;
-
-        getParentFragmentManager().setFragmentResultListener("date", this, new FragmentResultListener() {
-
-            @Override
-            public void onFragmentResult(@NonNull String key, @NonNull Bundle bundle) {
-                LocalDate localDate = (LocalDate) bundle.getSerializable("date");
-                year = localDate.getYear();
-                month = localDate.getMonthValue();
-                date = localDate.getDayOfMonth();
-
-                // 〇年・〇月・〇日をセット
-                setDateText();
-            }
-        });
+        setDateText(view);
 
         Thread thread = new Thread(new Query());
         thread.start();
@@ -110,7 +104,7 @@ public class DateFragment extends Fragment {
                 // 日付フラグメントの上にモーダルフラグメントを置く
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
-                        .add(R.id.activity_fragment_container, new ModalFragment(), "modalFragment")
+                        .add(R.id.activity_fragment_container, ModalFragment.newInstance(), "modalFragment")
                         .addToBackStack("DateFragment")
                         .commit();
             }
@@ -138,12 +132,11 @@ public class DateFragment extends Fragment {
             AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
                     AppDatabase.class, "TimeTable").build();
             timeTableDao = database.timeTableDao();
-            timeTableDao.insertAll(timeTableEntities);
-            returnedTimeTableEntities = timeTableDao.getAll();
+            returnedTimeTableEntities.addAll(timeTableDao.getAll());
         }
     }
 
-    public void setDateText() {
+    public void setDateText(View view) {
 
         // 〇年をセット
         TextView year_text = view.findViewById(R.id.selected_year);
@@ -155,7 +148,7 @@ public class DateFragment extends Fragment {
 
         // 〇日をセット
         TextView date_text = view.findViewById(R.id.selected_date);
-        date_text.setText(date + " 日");
+        date_text.setText(day + " 日");
     }
 
     class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
@@ -180,8 +173,9 @@ public class DateFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            holder.textView.setText(timeTableEntities.get(position).title + " / " + formatDateTime(timeTableEntities.get(position).datetime));
-            if (timeTableEntities.get(position).done) holder.textView.setBackgroundColor(Color.rgb(124,252,0)); // 赤
+            TimeTableEntity rec = returnedTimeTableEntities.get(position);
+            holder.textView.setText(String.valueOf(rec.id) + "/" + rec.title + " / " + formatDateTime(rec.datetime));
+            if (returnedTimeTableEntities.get(position).done) holder.textView.setBackgroundColor(Color.rgb(124,252,0)); // 赤
             else holder.textView.setBackgroundColor(Color.rgb(249,247,57)); // 黄色
         }
 
@@ -192,7 +186,7 @@ public class DateFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return timeTableEntities.size();
+            return returnedTimeTableEntities.size();
         }
     }
 }
