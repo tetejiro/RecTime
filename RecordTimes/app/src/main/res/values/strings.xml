@@ -12,7 +12,7 @@
     <string name="start">開始</string>
     <string name="end">終了</string>
     <string name="sample">sample</string>
-    <string name="hint">hint</string>
+    <string name="hint">登録する内容を入力してくらだい。</string>
     <string name="monday">月</string>
     <string name="thuesday">火</string>
     <string name="sunday">日</string>

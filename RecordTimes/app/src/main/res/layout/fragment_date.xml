@@ -6,98 +6,67 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/time_table_recycler_view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/selected_year"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/fuu"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/selected_month"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/fuu"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/selected_date"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/fuu"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/time_table_recycler_view"
-        android:layout_width="300dp"
-        android:layout_height="500dp"
-        android:layout_gravity="top"
-        android:layout_margin="30dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/border"
-        app:layout_constraintBottom_toBottomOf="@+id/contents"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout" />
-
-    <EditText
-        android:id="@+id/contents"
-        android:layout_width="280dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="50dp"
-        android:autofillHints="no"
-        android:hint="@string/hint"
-        android:inputType="textMultiLine"
-        app:layout_constraintBottom_toTopOf="@+id/liner_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/time_table_recycler_view" />
-
-    <LinearLayout
-        android:id="@+id/liner_layout"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:gravity="center|bottom"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contents">
+        android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/start"
-            android:layout_width="100dp"
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@+id/time_table_recycler_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/selected_year"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/fuu"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/selected_month"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/fuu"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/selected_date"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/fuu"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/time_table_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="680dp"
+            android:layout_below="@+id/linearLayout"
+            android:layout_alignParentBottom="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/linearLayout" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
             android:layout_marginRight="40dp"
-            android:backgroundTint="@android:color/holo_blue_dark"
-            android:onClick="registration_start"
-            android:text="@string/start"
-            android:textColor="@color/white" />
+            android:layout_marginBottom="40dp"
+            android:clickable="true"
+            app:srcCompat="@android:drawable/ic_input_add" />
 
-        <Button
-            android:id="@+id/end"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:backgroundTint="@android:color/holo_blue_dark"
-            android:onClick="registration_end"
-            android:text="@string/end"
-            android:textColor="@color/white" />
-    </LinearLayout>
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

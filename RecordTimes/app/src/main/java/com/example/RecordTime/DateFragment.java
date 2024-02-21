@@ -9,7 +9,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -25,6 +24,7 @@ import androidx.room.Room;
 import com.example.RecordTime.Rooms.AppDatabase;
 import com.example.RecordTime.Rooms.TimeTableDao;
 import com.example.RecordTime.Rooms.TimeTableEntity;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -102,34 +102,33 @@ public class DateFragment extends Fragment {
             throw new RuntimeException(e);
         }
 
-        // TODO: キーボードを隠す処理をまとめたい
-        // 背景押下時キーボードを隠す：フラグメント以外
-        ConstraintLayout constraintLayout = view.findViewById(R.id.constraint_layout_date);
-        constraintLayout.setOnTouchListener(new View.OnTouchListener() {
+        // モーダル：開ける
+        FloatingActionButton modalButton = (FloatingActionButton)view.findViewById(R.id.floatingActionButton);
+        modalButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                //キーボードを隠す
-                inputMethodManager.hideSoftInputFromWindow(constraintLayout.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                //背景にフォーカスを移す
-                constraintLayout.requestFocus();
-                return false;
+            public void onClick(View view) {
+                // 日付フラグメントの上にモーダルフラグメントを置く
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
+                        .add(R.id.activity_fragment_container, new ModalFragment(), "modalFragment")
+                        .addToBackStack("DateFragment")
+                        .commit();
             }
         });
 
-        // 背景押下時キーボードを隠す：フラグメント内
+        // キーボードを閉じる（フラグメント内）
         RecyclerView recyclerView = view.findViewById(R.id.time_table_recycler_view);
         recyclerView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                //キーボードを隠す
+                //キーボードを非表示にする
                 inputMethodManager.hideSoftInputFromWindow(recyclerView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                //背景にフォーカスを移す
-                recyclerView.requestFocus();
+
                 return false;
             }
         });
+
+        // TODO: モーダルの外をタップ・キーボード非表示時にのみモーダルフラグメントを外す。
     }
 
     public class Query implements Runnable {
