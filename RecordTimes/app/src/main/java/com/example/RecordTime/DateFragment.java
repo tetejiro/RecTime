@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -102,11 +103,14 @@ public class DateFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 // 日付フラグメントの上にモーダルフラグメントを置く
-                getActivity().getSupportFragmentManager().beginTransaction()
+                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag("modalFragment");
+                if(fragment == null || !fragment.isVisible()) {
+                    getActivity().getSupportFragmentManager().beginTransaction()
                         .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
                         .add(R.id.activity_fragment_container, ModalFragment.newInstance(), "modalFragment")
                         .addToBackStack("DateFragment")
                         .commit();
+                }
             }
         });
 
