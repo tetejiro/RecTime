@@ -3,7 +3,6 @@ package com.example.RecordTime;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -16,7 +15,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -35,16 +33,14 @@ import java.util.List;
 
 public class DateFragment extends Fragment {
 
-    List<TimeTableEntity> timeTableEntities;
+    LocalDate localDate;
+    RecyclerView recyclerView;
+
     List<TimeTableEntity> returnedTimeTableEntities = new ArrayList<>();
 
     TimeTableDao timeTableDao;
 
     InputMethodManager inputMethodManager;
-
-    int year;
-    int month;
-    int day;
 
     public static DateFragment newInstance(LocalDate localDate) {
         DateFragment fragment = new DateFragment();
@@ -61,12 +57,7 @@ public class DateFragment extends Fragment {
         inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
         // 〇年・〇月・〇日をセット
-        if (getArguments() != null) {
-            LocalDate localDate = (LocalDate) getArguments().getSerializable("date");
-            year = localDate.getYear();
-            month = localDate.getMonthValue();
-            day = localDate.getDayOfMonth();
-        }
+        if (getArguments() != null) localDate = (LocalDate) getArguments().getSerializable("date");
     }
 
     @Override
@@ -79,57 +70,60 @@ public class DateFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
+        this.recyclerView = view.findViewById(R.id.time_table_recycler_view);
+
+        // 〇年〇月〇日
         setDateText(view);
 
-        Thread thread = new Thread(new Query());
+        // 表示するレコードを取得する
+        Thread thread = new Thread(new SelectTimeTableRec());
         thread.start();
 
         try {
             thread.join();
-
             // RecyclerView をセット
-            RecyclerView recyclerView = view.findViewById(R.id.time_table_recycler_view);
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             recyclerView.setAdapter(new Adapter());
-
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        // モーダル：開ける
-        FloatingActionButton modalButton = (FloatingActionButton)view.findViewById(R.id.floatingActionButton);
-        modalButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // 日付フラグメントの上にモーダルフラグメントを置く
-                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag("modalFragment");
-                if(fragment == null || !fragment.isVisible()) {
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                        .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
-                        .add(R.id.activity_fragment_container, ModalFragment.newInstance(), "modalFragment")
-                        .addToBackStack("DateFragment")
-                        .commit();
-                }
-            }
-        });
+        // =========== モーダル関連 ===============
 
+        // 時間のみを記録
+        FloatingActionButton rec_only_time = (FloatingActionButton)view.findViewById(R.id.rec_only_time);
+        rec_only_time.setOnClickListener(new OpenModal("only_time"));
+        // 名前付きで記録
+        FloatingActionButton rec_detail = (FloatingActionButton)view.findViewById(R.id.rec_detail);
+        rec_detail.setOnClickListener(new OpenModal("detail"));
         // キーボードを閉じる（フラグメント内）
-        RecyclerView recyclerView = view.findViewById(R.id.time_table_recycler_view);
-        recyclerView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                //キーボードを非表示にする
-                inputMethodManager.hideSoftInputFromWindow(recyclerView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-
-                return false;
-            }
-        });
+        recyclerView.setOnTouchListener(new CloseKeyboard());
 
         // TODO: モーダルの外をタップ・キーボード非表示時にのみモーダルフラグメントを外す。
     }
 
-    public class Query implements Runnable {
+
+    // ======================= 切り出したメソッド・クラス ==========================
+
+    // 1番上にある日付を表示するメソッド
+    public void setDateText(View view) {
+
+        // 〇年をセット
+        TextView year_text = view.findViewById(R.id.selected_year);
+        year_text.setText(localDate.getYear() + " 年");
+
+        // 〇月をセット
+        TextView month_text = view.findViewById(R.id.selected_month);
+        month_text.setText(localDate.getMonthValue() + " 月");
+
+        // 〇日をセット
+        TextView date_text = view.findViewById(R.id.selected_date);
+        date_text.setText(localDate.getDayOfMonth() + " 日");
+    }
+
+    // RecyclerView に渡す TimeTable レコードをクエリ
+    public class SelectTimeTableRec implements Runnable {
 
         @Override
         public void run() {
@@ -140,21 +134,46 @@ public class DateFragment extends Fragment {
         }
     }
 
-    public void setDateText(View view) {
+    // モーダルを開くメソッド
+    public class OpenModal implements View.OnClickListener {
+        Fragment fragment;
+        String tag;
+        public OpenModal(String val) {
+            if (val.equals("only_time")) {
+                fragment = ModalFragment.newInstance();
+                tag = "modalFragment";
+            } else {
+                fragment = ModalFragment.newInstance();
+                tag = "modalFragment";
+            }
+        }
 
-        // 〇年をセット
-        TextView year_text = view.findViewById(R.id.selected_year);
-        year_text.setText(year + " 年");
-
-        // 〇月をセット
-        TextView month_text = view.findViewById(R.id.selected_month);
-        month_text.setText(month + " 月");
-
-        // 〇日をセット
-        TextView date_text = view.findViewById(R.id.selected_date);
-        date_text.setText(day + " 日");
+        @Override
+        public void onClick(View view) {
+            // 日付フラグメントの上にモーダルフラグメントを置く
+            Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag("modalFragment");
+            if(fragment == null || !fragment.isVisible()) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
+                        .add(R.id.activity_fragment_container, ModalFragment.newInstance(), tag)
+                        .addToBackStack("DateFragment")
+                        .commit();
+            }
+        }
     }
 
+    // キーボードを非表示にするイベントリスナー（onTouch）
+    public class CloseKeyboard implements View.OnTouchListener {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            //キーボードを非表示にする
+            inputMethodManager.hideSoftInputFromWindow(recyclerView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+            return false;
+        }
+    }
+
+    // RecyclerView の Adapter
     class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
         public class ViewHolder extends RecyclerView.ViewHolder {

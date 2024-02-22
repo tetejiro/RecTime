@@ -9,9 +9,27 @@
     android:background="@drawable/modal"
     tools:context=".ModalFragment">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/contents"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_toStartOf="@+id/close"
+        android:text="@string/fuu" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:clickable="true"
+            android:src="@android:drawable/ic_menu_close_clear_cancel" />
 
         <EditText
             android:id="@+id/contents"
@@ -19,7 +37,10 @@
             android:layout_height="150dp"
             android:layout_above="@+id/liner_layout"
             android:layout_alignParentEnd="true"
-            android:layout_margin="40dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="20dp"
             android:autofillHints="no"
             android:background="@drawable/border_modal"
             android:gravity="top|left"
@@ -33,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="24dp"
             android:gravity="center|bottom">
 
             <Button
@@ -56,14 +77,6 @@
                 android:text="@string/end"
                 android:textColor="@color/white" />
         </LinearLayout>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:clickable="true"
-            android:src="@android:drawable/ic_menu_close_clear_cancel" />
 
     </RelativeLayout>
 

@@ -15,7 +15,7 @@ public class MainActivity extends FragmentActivity {
         if(savedInstanceState == null){
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
-                    .add(R.id.activity_fragment_container, new MonthFragment())
+                    .add(R.id.activity_fragment_container, MonthFragment.newInstance())
                     .commit();
         }
     }
