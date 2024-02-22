@@ -2,11 +2,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/modal"
+    android:id="@+id/modal_detail"
     android:layout_width="320dp"
     android:layout_height="320dp"
     android:layout_gravity="center"
-    android:background="@drawable/modal"
+    android:background="@drawable/modal_border"
     tools:context=".ModalFragment">
 
     <TextView
@@ -15,9 +15,10 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/contents"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="28dp"
         android:layout_toStartOf="@+id/close"
-        android:text="@string/fuu" />
+        android:text="@string/detail_title"
+        android:textSize="16dp"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -42,7 +43,7 @@
             android:layout_marginEnd="40dp"
             android:layout_marginBottom="20dp"
             android:autofillHints="no"
-            android:background="@drawable/border_modal"
+            android:background="@drawable/modal_edit_text"
             android:gravity="top|left"
             android:hint="@string/hint"
             android:inputType="textMultiLine"

@@ -124,7 +124,6 @@ public class DateFragment extends Fragment {
 
     // RecyclerView に渡す TimeTable レコードをクエリ
     public class SelectTimeTableRec implements Runnable {
-
         @Override
         public void run() {
             AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
@@ -136,26 +135,19 @@ public class DateFragment extends Fragment {
 
     // モーダルを開くメソッド
     public class OpenModal implements View.OnClickListener {
-        Fragment fragment;
-        String tag;
+        String modalMode;
         public OpenModal(String val) {
-            if (val.equals("only_time")) {
-                fragment = ModalFragment.newInstance();
-                tag = "modalFragment";
-            } else {
-                fragment = ModalFragment.newInstance();
-                tag = "modalFragment";
-            }
+            this.modalMode = val;
         }
 
         @Override
         public void onClick(View view) {
             // 日付フラグメントの上にモーダルフラグメントを置く
-            Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag("modalFragment");
+            Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag("ModalFragment");
             if(fragment == null || !fragment.isVisible()) {
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
-                        .add(R.id.activity_fragment_container, ModalFragment.newInstance(), tag)
+                        .add(R.id.activity_fragment_container, ModalFragment.newInstance(modalMode), "ModalFragment")
                         .addToBackStack("DateFragment")
                         .commit();
             }

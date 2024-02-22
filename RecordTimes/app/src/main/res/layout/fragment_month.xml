@@ -87,7 +87,7 @@
             android:layout_weight="1"
             android:textSize="16sp"
             android:gravity="center"
-            android:text="@string/thuesday" />
+            android:text="@string/tuesday" />
 
         <TextView
             android:id="@+id/wednesday"

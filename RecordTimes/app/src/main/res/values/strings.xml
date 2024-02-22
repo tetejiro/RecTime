@@ -9,14 +9,20 @@
     <string name="post"><![CDATA[>>]]></string>
     <string name="selected_date">1</string>
     <string name="time_view_holder">time_view_holder</string>
+
     <string name="only_time_title">時間のみ記録する</string>
+    <string name="ok">OK</string>
     <string name="with_time_title">名前を付けて記録する</string>
+    <string name="note"><![CDATA[※]]> 後から更新できます。</string>
+
+    <string name="hint">登録する内容を入力してください。</string>
+    <string name="sample">sample</string>
+    <string name="detail_title">時間とタイトルを記録する</string>
     <string name="start">開始</string>
     <string name="end">終了</string>
-    <string name="sample">sample</string>
-    <string name="hint">登録する内容を入力してください。</string>
+
     <string name="monday">月</string>
-    <string name="thuesday">火</string>
+    <string name="tuesday">火</string>
     <string name="sunday">日</string>
     <string name="saturday">土</string>
     <string name="friday">金</string>
