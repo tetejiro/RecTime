@@ -9,6 +9,8 @@
         android:layout_height="50dp"
         android:layout_weight="1"
         android:ems="10"
+        android:gravity="center_vertical"
+        android:padding="10dp"
         android:text="@string/time_view_holder"
         android:textSize="16dp" />
 

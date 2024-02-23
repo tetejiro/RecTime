@@ -53,7 +53,7 @@ public class MonthFragment extends Fragment {
         // 先月・来月への移動・それに関連する一連の処理・各日付の押下時の処理
         setButtonOperable();
 
-        // 〇年・〇月をセット（setMonthOperable の中でも使用されている）
+        // 〇年・〇月をセット
         setYearMonthText();
 
         // RecyclerView をセット
@@ -63,6 +63,7 @@ public class MonthFragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
+    // << >> 押下時：月を1月ずつずらす・〇年〇月セット・adapterに通知
     public void setButtonOperable() {
         Button nextButton = view.findViewById(R.id.next);
         nextButton.setOnClickListener(view -> {
@@ -83,6 +84,7 @@ public class MonthFragment extends Fragment {
         });
     }
 
+    // 〇年〇月をセット
     public void setYearMonthText() {
         // 〇年
         TextView year_text = this.view.findViewById(R.id.year);

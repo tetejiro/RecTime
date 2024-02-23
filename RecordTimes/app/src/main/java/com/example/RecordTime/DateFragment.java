@@ -56,7 +56,7 @@ public class DateFragment extends Fragment {
 
         inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        // 〇年・〇月・〇日をセット
+        // 〇年・〇月・〇日を取得
         if (getArguments() != null) localDate = (LocalDate) getArguments().getSerializable("date");
     }
 
@@ -72,7 +72,7 @@ public class DateFragment extends Fragment {
 
         this.recyclerView = view.findViewById(R.id.time_table_recycler_view);
 
-        // 〇年〇月〇日
+        // 〇年〇月〇日をセット
         setDateText(view);
 
         // 表示するレコードを取得する
@@ -89,18 +89,18 @@ public class DateFragment extends Fragment {
             throw new RuntimeException(e);
         }
 
-        // =========== モーダル関連 ===============
+        // ============ モーダル関連 ===============
 
-        // 時間のみを記録
+        // 時計マーク押下：モーダルを開く
         FloatingActionButton rec_only_time = (FloatingActionButton)view.findViewById(R.id.rec_only_time);
         rec_only_time.setOnClickListener(new OpenModal("only_time"));
-        // 名前付きで記録
+        // プラスボタン押下：モーダルを開く
         FloatingActionButton rec_detail = (FloatingActionButton)view.findViewById(R.id.rec_detail);
         rec_detail.setOnClickListener(new OpenModal("detail"));
-        // キーボードを閉じる（フラグメント内）
+        // recyclerView押下：キーボードを閉じる
         recyclerView.setOnTouchListener(new CloseKeyboard());
 
-        // TODO: モーダルの外をタップ・キーボード非表示時にのみモーダルフラグメントを外す。
+        // TODO: 背景タップ時、モーダル非表示（キーワード表示されている場合キーボードのみ非表示）
     }
 
 
@@ -122,7 +122,7 @@ public class DateFragment extends Fragment {
         date_text.setText(localDate.getDayOfMonth() + " 日");
     }
 
-    // RecyclerView に渡す TimeTable レコードをクエリ
+    // TimeTable レコードを取得（RecyclerView に渡す）
     public class SelectTimeTableRec implements Runnable {
         @Override
         public void run() {
@@ -135,9 +135,9 @@ public class DateFragment extends Fragment {
 
     // モーダルを開くメソッド
     public class OpenModal implements View.OnClickListener {
-        String modalMode;
+        String modalType;
         public OpenModal(String val) {
-            this.modalMode = val;
+            this.modalType = val;
         }
 
         @Override
@@ -147,7 +147,7 @@ public class DateFragment extends Fragment {
             if(fragment == null || !fragment.isVisible()) {
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
-                        .add(R.id.activity_fragment_container, ModalFragment.newInstance(modalMode), "ModalFragment")
+                        .add(R.id.activity_fragment_container, ModalFragment.newInstance(modalType), "ModalFragment")
                         .addToBackStack("DateFragment")
                         .commit();
             }
