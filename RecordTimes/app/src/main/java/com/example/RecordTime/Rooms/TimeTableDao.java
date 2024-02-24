@@ -16,9 +16,6 @@ public interface TimeTableDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(TimeTableEntity timeTableEntity);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(List<TimeTableEntity> timeTableEntities);
-
     @Query("SELECT id, title FROM time_table")
     List<TimeTableEntity> getAll();
 

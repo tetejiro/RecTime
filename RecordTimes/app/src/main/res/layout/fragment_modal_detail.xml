@@ -63,20 +63,16 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="24dp"
-                android:backgroundTint="@android:color/holo_blue_dark"
                 android:onClick="registration_start"
-                android:text="@string/start"
-                android:textColor="@color/white" />
+                android:text="@string/start" />
 
             <Button
                 android:id="@+id/end"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
-                android:backgroundTint="@android:color/holo_blue_dark"
                 android:onClick="registration_end"
-                android:text="@string/end"
-                android:textColor="@color/white" />
+                android:text="@string/end" />
         </LinearLayout>
 
     </RelativeLayout>
