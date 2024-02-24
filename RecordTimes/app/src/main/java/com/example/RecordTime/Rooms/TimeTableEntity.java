@@ -30,10 +30,6 @@ public class TimeTableEntity {
         this.done = false;
     }
 
-    public void setTitle(String val) {
-        this.title = val;
-    }
-
     public String getTitle() {
         return this.title;
     }

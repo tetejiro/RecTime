@@ -46,14 +46,13 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                 String modalType = result.getString("modalType");
-                LocalDate localDate = (LocalDate) result.getSerializable("date");
 
                 // 日付フラグメントの上にモーダルフラグメントを置く
                 Fragment fragment = getSupportFragmentManager().findFragmentByTag("ModalFragment");
                 if(fragment == null || !fragment.isVisible()) {
                         getSupportFragmentManager().beginTransaction()
                             .setReorderingAllowed(true)
-                            .add(R.id.activity_fragment_container, ModalFragment.newInstance(modalType, localDate), "ModalFragment")
+                            .add(R.id.activity_fragment_container, ModalFragment.newInstance(modalType), "ModalFragment")
                             .addToBackStack("ModalFragment")
                             .commit();
                 }

@@ -22,13 +22,9 @@ import com.example.RecordTime.Rooms.TimeTableDao;
 import com.example.RecordTime.Rooms.TimeTableEntity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.time.LocalDate;
-
 public class ModalFragment extends Fragment {
     private final String MODAL_TYPE = "only_time";
     private final String BLANK_TITLE = "未入力";
-
-    LocalDate localDate;
 
     String modalType;
 
@@ -38,11 +34,10 @@ public class ModalFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static ModalFragment newInstance(String val, LocalDate localDate) {
+    public static ModalFragment newInstance(String val) {
         ModalFragment fragment = new ModalFragment();
         Bundle args = new Bundle();
         args.putString("modalType", val);
-        args.putSerializable("date", localDate);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,7 +47,6 @@ public class ModalFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             modalType = getArguments().get("modalType").toString();
-            localDate = (LocalDate) getArguments().get("date");
         }
     }
 
