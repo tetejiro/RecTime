@@ -3,6 +3,9 @@ package com.example.RecordTime;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -13,8 +16,11 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -35,6 +41,8 @@ public class DateFragment extends Fragment {
 
     LocalDate localDate;
     RecyclerView recyclerView;
+    Adapter adapter = new Adapter();
+    Handler mainThreadHandler = new Handler();
 
     List<TimeTableEntity> returnedTimeTableEntities = new ArrayList<>();
 
@@ -58,6 +66,37 @@ public class DateFragment extends Fragment {
 
         // 〇年・〇月・〇日を取得
         if (getArguments() != null) localDate = (LocalDate) getArguments().getSerializable("date");
+
+        // モーダルを閉じたら、ここに戻ってくる。
+        getActivity().getSupportFragmentManager().setFragmentResultListener("closeModal", getActivity(), new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+
+                // スレッド作成し、select して returnedTimeTableEntities を再取得
+                returnedTimeTableEntities.clear();
+                HandlerThread handlerThread = new HandlerThread("Select");
+                handlerThread.start();
+
+                Handler handler = new Handler(handlerThread.getLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
+                                AppDatabase.class, "TimeTable").build();
+                        TimeTableDao timeTableDao = database.timeTableDao();
+                        returnedTimeTableEntities.addAll(timeTableDao.getAll());
+
+                        // 「メインスレッド」に adapter.notifyDataSetChanged() を依頼する。
+                        mainThreadHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -84,7 +123,7 @@ public class DateFragment extends Fragment {
             // RecyclerView をセット
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-            recyclerView.setAdapter(new Adapter());
+            recyclerView.setAdapter(adapter);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -126,6 +165,7 @@ public class DateFragment extends Fragment {
     public class SelectTimeTableRec implements Runnable {
         @Override
         public void run() {
+            returnedTimeTableEntities.clear();
             AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
                     AppDatabase.class, "TimeTable").build();
             timeTableDao = database.timeTableDao();
@@ -142,15 +182,10 @@ public class DateFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            // 日付フラグメントの上にモーダルフラグメントを置く
-            Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag("ModalFragment");
-            if(fragment == null || !fragment.isVisible()) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
-                        .add(R.id.activity_fragment_container, ModalFragment.newInstance(modalType), "ModalFragment")
-                        .addToBackStack("DateFragment")
-                        .commit();
-            }
+            Bundle args = new Bundle();
+            args.putString("modalType", modalType);
+            args.putSerializable("date", localDate);
+            getParentFragmentManager().setFragmentResult("popModalOnDate", args);
         }
     }
 

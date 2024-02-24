@@ -115,11 +115,9 @@ public class MonthFragment extends Fragment {
                 dateButton.setOnClickListener(view -> {
 
                     // 日付フラグメントとの交換
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
-                            .replace(R.id.activity_fragment_container, DateFragment.newInstance(date))
-                            .addToBackStack("MonthFragment")
-                            .commit();
+                    Bundle args = new Bundle();
+                    args.putSerializable("date", date);
+                    getParentFragmentManager().setFragmentResult("monthToDate", args);
                 });
             }
         }
