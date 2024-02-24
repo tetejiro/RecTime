@@ -29,6 +29,7 @@ public class ModalFragment extends Fragment {
     String modalType;
 
     View view;
+    Boolean isDone;
 
     public ModalFragment() {
         // Required empty public constructor
@@ -73,6 +74,9 @@ public class ModalFragment extends Fragment {
             // 開始ボタン押下：インサート・モーダル閉じる・adapterに通知
             Button startButton = view.findViewById(R.id.start);
             startButton.setOnClickListener(new ChainOfInsert());
+
+            Button endButton = view.findViewById(R.id.end);
+            endButton.setOnClickListener(new ChainOfInsert());
         }
 
         // モーダルフラグメント上のバツボタン押下：モーダル閉じる
@@ -89,6 +93,10 @@ public class ModalFragment extends Fragment {
     class ChainOfInsert implements View.OnClickListener {
         @Override
         public void onClick(View view) {
+            // ボタンの文字列が「終了」のみ：isDone を true にする。（デフォルトは true）
+            Button button = (Button)view;
+            isDone = button.getText().equals("終了");
+
             // 別スレ生成 -> 開始
             HandlerThread handlerThread = new HandlerThread("Insert");
             handlerThread.start();
@@ -110,6 +118,7 @@ public class ModalFragment extends Fragment {
         String title = BLANK_TITLE;
         @Override
         public void run() {
+            // 時間のみモーダル　かつ　EditText が "" でない：BLANK_TITLE
             EditText editText = (EditText) view.findViewById(R.id.contents);
             if(!modalType.equals(ONLY_TIME_MODAL) && !editText.getText().toString().equals("")) {
                 title = editText.getText().toString();
@@ -117,7 +126,7 @@ public class ModalFragment extends Fragment {
             AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
                     AppDatabase.class, "TimeTable").build();
             TimeTableDao timeTableDao = database.timeTableDao();
-            timeTableDao.insert(new TimeTableEntity(title));
+            timeTableDao.insert(new TimeTableEntity(title, isDone));
         }
     }
 

@@ -225,7 +225,7 @@ public class DateFragment extends Fragment {
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             TimeTableEntity rec = returnedTimeTableEntities.get(position);
             holder.textView.setText(String.valueOf(rec.id) + "/" + rec.title + " / " + formatDateTime(rec.datetime));
-            if (returnedTimeTableEntities.get(position).done) holder.textView.setBackgroundColor(Color.rgb(124,252,0)); // 赤
+            if (returnedTimeTableEntities.get(position).isDone) holder.textView.setBackgroundColor(Color.rgb(124,252,0)); // 赤
             else holder.textView.setBackgroundColor(Color.rgb(249,247,57)); // 黄色
         }
 

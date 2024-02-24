@@ -21,13 +21,13 @@ public class TimeTableEntity {
     @ColumnInfo(name = "datetime")
     public LocalDateTime datetime;
 
-    @ColumnInfo(name = "done")
-    public Boolean done;
+    @ColumnInfo(name = "isDone")
+    public Boolean isDone;
 
-    public TimeTableEntity(String title) {
+    public TimeTableEntity(String title, Boolean isDone) {
         this.title = title;
         setDatetime();
-        this.done = false;
+        this.isDone = isDone;
     }
 
     public String getTitle() {
@@ -43,10 +43,10 @@ public class TimeTableEntity {
     }
 
     public Boolean isDone() {
-        return this.done;
+        return this.isDone;
     }
 
     public void setDone() {
-        this.done = !isDone();
+        this.isDone = !isDone();
     }
 }
