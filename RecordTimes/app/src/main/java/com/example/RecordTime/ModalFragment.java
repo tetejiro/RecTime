@@ -23,7 +23,7 @@ import com.example.RecordTime.Rooms.TimeTableEntity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ModalFragment extends Fragment {
-    private final String MODAL_TYPE = "only_time";
+    private final String ONLY_TIME_MODAL = "only_time";
     private final String BLANK_TITLE = "未入力";
 
     String modalType;
@@ -54,7 +54,7 @@ public class ModalFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         int resource;
-        if (modalType.equals(MODAL_TYPE)) resource = R.layout.fragment_modal_only_time;
+        if (modalType.equals(ONLY_TIME_MODAL)) resource = R.layout.fragment_modal_only_time;
         else resource = R.layout.fragment_modal_detail;
         return inflater.inflate(resource, container, false);
     }
@@ -64,15 +64,15 @@ public class ModalFragment extends Fragment {
         this.view = view;
 
         // only_time モーダル
-        if(modalType.equals(MODAL_TYPE)) {
+        if(modalType.equals(ONLY_TIME_MODAL)) {
             // OKボタン押下；
             Button OK_button = view.findViewById(R.id.confirm_button);
-            OK_button.setOnClickListener(new ChainOfInsert(modalType));
+            OK_button.setOnClickListener(new ChainOfInsert());
         // detail モーダル
         } else {
             // 開始ボタン押下：インサート・モーダル閉じる・adapterに通知
             Button startButton = view.findViewById(R.id.start);
-            startButton.setOnClickListener(new ChainOfInsert(""));
+            startButton.setOnClickListener(new ChainOfInsert());
         }
 
         // モーダルフラグメント上のバツボタン押下：モーダル閉じる
@@ -87,10 +87,6 @@ public class ModalFragment extends Fragment {
      */
     // テキストエディタから文字列を取得
     class ChainOfInsert implements View.OnClickListener {
-        String title;
-        public ChainOfInsert(String val) {
-            this.title = val;
-        }
         @Override
         public void onClick(View view) {
             // 別スレ生成 -> 開始
@@ -99,7 +95,7 @@ public class ModalFragment extends Fragment {
             //作成したHandlerThread(別スレ)内部のLooperを引数として、HandlerThread(のLooper)にメッセージを送るHandlerを生成する。
             Handler handler = new Handler(handlerThread.getLooper());
             //Handlerのpostメソッドでメッセージ(タスク：重たい処理)を送信する。
-            handler.post(new InsertTimeTable(title));
+            handler.post(new InsertTimeTable());
 
 
             // 日フラグメントへ通知して　adapter.notifyDataSetChanged
@@ -111,19 +107,11 @@ public class ModalFragment extends Fragment {
 
     // レコードをインサート
     class InsertTimeTable implements Runnable {
-        String title;
-        InsertTimeTable(String val) {
-            title = val;
-        }
+        String title = BLANK_TITLE;
         @Override
         public void run() {
-            // 時間のみ記録：タイトル = 未入力
-            if(title.equals(MODAL_TYPE)) {
-                title = BLANK_TITLE;
-            }
-            // タイトルと記録：タイトル = EditText の文字
-            else {
-                EditText editText = (EditText) view.findViewById(R.id.contents);
+            EditText editText = (EditText) view.findViewById(R.id.contents);
+            if(!modalType.equals(ONLY_TIME_MODAL) && !editText.getText().toString().equals("")) {
                 title = editText.getText().toString();
             }
             AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
