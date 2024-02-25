@@ -82,7 +82,7 @@ public class DateFragment extends Fragment {
                         AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
                                 AppDatabase.class, "TimeTable").build();
                         TimeTableDao timeTableDao = database.timeTableDao();
-                        returnedTimeTableEntities.addAll(timeTableDao.getAll());
+                        returnedTimeTableEntities.addAll(timeTableDao.getLimitByDate(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay()));
 
                         // 「メインスレッド」に adapter.notifyDataSetChanged() を依頼する。
                         mainThreadHandler.post(new Runnable() {
@@ -171,7 +171,7 @@ public class DateFragment extends Fragment {
             AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
                     AppDatabase.class, "TimeTable").build();
             timeTableDao = database.timeTableDao();
-            returnedTimeTableEntities.addAll(timeTableDao.getAll());
+            returnedTimeTableEntities.addAll(timeTableDao.getLimitByDate(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay()));
         }
     }
 
