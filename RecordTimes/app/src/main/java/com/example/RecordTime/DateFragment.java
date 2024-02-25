@@ -16,10 +16,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -115,7 +113,7 @@ public class DateFragment extends Fragment {
         setDateText(view);
 
         // 表示するレコードを取得する
-        Thread thread = new Thread(new SelectTimeTableRec());
+        Thread thread = new Thread(new SelectTimeTableRec(localDate));
         thread.start();
 
         try {
@@ -163,6 +161,10 @@ public class DateFragment extends Fragment {
 
     // TimeTable レコードを取得（RecyclerView に渡す）
     public class SelectTimeTableRec implements Runnable {
+        LocalDate localDate;
+        SelectTimeTableRec(LocalDate localDate) {
+            this.localDate = localDate;
+        }
         @Override
         public void run() {
             returnedTimeTableEntities.clear();

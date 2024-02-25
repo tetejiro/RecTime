@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey;
 import java.time.LocalDateTime;
 
 
-@Entity(tableName = "time_table")
+@Entity(tableName = "time_tables")
 public class TimeTableEntity {
 
     @PrimaryKey(autoGenerate = true)
@@ -21,7 +21,7 @@ public class TimeTableEntity {
     @ColumnInfo(name = "datetime")
     public LocalDateTime datetime;
 
-    @ColumnInfo(name = "isDone")
+    @ColumnInfo(name = "is_done")
     public Boolean isDone;
 
     public TimeTableEntity(String title, Boolean isDone) {
