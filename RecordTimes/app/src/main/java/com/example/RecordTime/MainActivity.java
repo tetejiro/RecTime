@@ -4,10 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentResultListener;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import java.time.LocalDate;
 
@@ -52,7 +50,7 @@ public class MainActivity extends FragmentActivity {
                 if(fragment == null || !fragment.isVisible()) {
                         getSupportFragmentManager().beginTransaction()
                             .setReorderingAllowed(true)
-                            .add(R.id.activity_fragment_container, ModalFragment.newInstance(modalType), "ModalFragment")
+                            .add(R.id.activity_fragment_container, InsertModalFragment.newInstance(modalType), "ModalFragment")
                             .addToBackStack("ModalFragment")
                             .commit();
                 }

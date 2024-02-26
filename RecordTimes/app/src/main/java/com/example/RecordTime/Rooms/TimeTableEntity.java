@@ -5,13 +5,15 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
 @Entity(tableName = "time_tables")
-public class TimeTableEntity {
+public class TimeTableEntity implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
     public int id;
 
     @ColumnInfo(name = "title")
@@ -26,7 +28,7 @@ public class TimeTableEntity {
 
     public TimeTableEntity(String title, Boolean isDone) {
         this.title = title;
-        setDatetime();
+        this.datetime = LocalDateTime.now();
         this.isDone = isDone;
     }
 
@@ -38,7 +40,7 @@ public class TimeTableEntity {
         return this.datetime;
     }
 
-    public void setDatetime() {
+    public void setDateTime() {
         this.datetime = LocalDateTime.now();
     }
 

@@ -15,5 +15,5 @@ public interface TimeTableDao {
     void insert(TimeTableEntity timeTableEntity);
 
     @Query("SELECT id, title, is_done FROM time_tables WHERE :start <= datetime AND datetime < :end")
-    List<TimeTableEntity> getLimitByDate(LocalDateTime start, LocalDateTime end);
+    List<TimeTableEntity> getLimitedRecByDate(LocalDateTime start, LocalDateTime end);
 }

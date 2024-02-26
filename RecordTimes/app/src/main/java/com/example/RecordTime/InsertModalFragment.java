@@ -10,7 +10,6 @@ import androidx.room.Room;
 
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,9 @@ import com.example.RecordTime.Rooms.TimeTableDao;
 import com.example.RecordTime.Rooms.TimeTableEntity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class ModalFragment extends Fragment {
+import java.time.LocalDateTime;
+
+public class InsertModalFragment extends Fragment {
     private final String ONLY_TIME_MODAL = "only_time";
     private final String BLANK_TITLE = "未入力";
 
@@ -31,12 +32,12 @@ public class ModalFragment extends Fragment {
     View view;
     Boolean isDone;
 
-    public ModalFragment() {
+    public InsertModalFragment() {
         // Required empty public constructor
     }
 
-    public static ModalFragment newInstance(String val) {
-        ModalFragment fragment = new ModalFragment();
+    public static InsertModalFragment newInstance(String val) {
+        InsertModalFragment fragment = new InsertModalFragment();
         Bundle args = new Bundle();
         args.putString("modalType", val);
         fragment.setArguments(args);

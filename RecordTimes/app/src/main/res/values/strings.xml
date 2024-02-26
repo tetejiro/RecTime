@@ -27,4 +27,14 @@
     <string name="friday">金</string>
     <string name="thursday">木</string>
     <string name="wednesday">水</string>
+
+    <!--  更新モーダル  -->
+    <string name="update_or_delete_title">更新 / 削除</string>
+    <string name="update_date_title">日付</string>
+    <string name="update_time_title">時間</string>
+    <string name="update_time">13:50</string>
+    <string name="update_title_title">タイトル</string>
+    <string name="update_date">2024 年 2 / 26</string>
+    <string name="update_button">更新</string>
+    <string name="delete_button">削除</string>
 </resources>
