@@ -22,21 +22,23 @@ import com.example.RecordTime.Rooms.TimeTableDao;
 import com.example.RecordTime.Rooms.TimeTableEntity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class ModalFragment extends Fragment {
+import java.time.LocalDateTime;
+
+public class InsertModalFragment extends Fragment {
     private final String ONLY_TIME_MODAL = "only_time";
     private final String BLANK_TITLE = "未入力";
 
     String modalType;
 
     View view;
-    Boolean isDone;
+    Boolean isDone = false;
 
-    public ModalFragment() {
+    public InsertModalFragment() {
         // Required empty public constructor
     }
 
-    public static ModalFragment newInstance(String val) {
-        ModalFragment fragment = new ModalFragment();
+    public static InsertModalFragment newInstance(String val) {
+        InsertModalFragment fragment = new InsertModalFragment();
         Bundle args = new Bundle();
         args.putString("modalType", val);
         fragment.setArguments(args);
@@ -89,7 +91,6 @@ public class ModalFragment extends Fragment {
      *  引数無し：初期値をインサート
      *  引数：引数をインサート
      */
-    // テキストエディタから文字列を取得
     class ChainOfInsert implements View.OnClickListener {
         @Override
         public void onClick(View view) {
@@ -107,7 +108,7 @@ public class ModalFragment extends Fragment {
 
 
             // 日フラグメントへ通知して　adapter.notifyDataSetChanged
-            moveToDate();
+            getParentFragmentManager().setFragmentResult("closeModal", null);
             // モーダルフラグメントを取り外す
             removeModal();
         }
@@ -126,7 +127,7 @@ public class ModalFragment extends Fragment {
             AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
                     AppDatabase.class, "TimeTable").build();
             TimeTableDao timeTableDao = database.timeTableDao();
-            timeTableDao.insert(new TimeTableEntity(title, isDone));
+            timeTableDao.insert(new TimeTableEntity(title, LocalDateTime.now(), isDone));
         }
     }
 
@@ -142,13 +143,8 @@ public class ModalFragment extends Fragment {
     public void removeModal() {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
+                .setReorderingAllowed(true)
                 .remove(fragmentManager.findFragmentByTag("ModalFragment"))
                 .commit();
-    }
-
-    // 日フラグメントに通知する。(adapter.notifyDataSetChanged() を依頼するため)
-    public void moveToDate() {
-        getParentFragmentManager().setFragmentResult("closeModal", null);
     }
 }

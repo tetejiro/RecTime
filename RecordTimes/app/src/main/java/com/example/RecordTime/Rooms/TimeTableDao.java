@@ -5,11 +5,9 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import androidx.room.RawQuery;
+import androidx.room.Update;
 
-import com.example.RecordTime.Rooms.TimeTableEntity;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Dao
@@ -18,9 +16,12 @@ public interface TimeTableDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(TimeTableEntity timeTableEntity);
 
-    @Query("SELECT id, title, is_done FROM time_tables")
-    List<TimeTableEntity> getAll();
+    @Query("SELECT id, title, date_time, is_done FROM time_tables WHERE :start <= date_time AND date_time < :end")
+    List<TimeTableEntity> getLimitedRecByDate(LocalDateTime start, LocalDateTime end);
 
-    @Query("DELETE FROM time_tables")
-    public void deleteAll();
+    @Query("SELECT id, title, date_time, is_done FROM time_tables WHERE id = :id")
+    TimeTableEntity getTargetRec(int id);
+
+    @Update
+    void update(TimeTableEntity timeTableEntity);
 }
