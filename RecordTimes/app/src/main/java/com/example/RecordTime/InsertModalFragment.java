@@ -96,11 +96,8 @@ public class InsertModalFragment extends Fragment {
             // インサートするレコードに値をセット
             TimeTableEntity newRec = setNewVal(startButton);
 
-            // インサート処理
+            // インサート処理　→　モーダル閉じる
             insertRec(newRec);
-
-            // モーダルフラグメントを取り外す
-            removeModal();
         }
     }
 
@@ -138,16 +135,15 @@ public class InsertModalFragment extends Fragment {
 
                 // 日フラグメントへ通知して（日フラグメントで adapter.notifyDataSetChanged ）
                 getParentFragmentManager().setFragmentResult("closeModal", null);
+
+                // モーダルを閉じる
+                removeModal();
             }
         });
     }
 
     // モーダルフラグメントを外す
     public void removeModal() {
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .setReorderingAllowed(true)
-                .remove(fragmentManager.findFragmentByTag("ModalFragment"))
-                .commit();
+        getActivity().getSupportFragmentManager().popBackStack();
     }
 }

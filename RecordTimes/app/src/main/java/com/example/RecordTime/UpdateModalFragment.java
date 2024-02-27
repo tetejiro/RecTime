@@ -21,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.room.Room;
 
 import com.example.RecordTime.Rooms.AppDatabase;
@@ -175,9 +174,6 @@ public class UpdateModalFragment extends Fragment {
 
             // アップデート → adapter に通知
             updateRec();
-
-            // モーダル閉じる
-            closeModal();
         }
     }
 
@@ -199,9 +195,9 @@ public class UpdateModalFragment extends Fragment {
         TextView title = view.findViewById(R.id.update_title);
         String titleText = title.getText().toString();
 
-        rec.dateTime = localDateTime;
-        rec.title = titleText;
-        rec.isDone = switchMaterial.isChecked();
+        rec.setTitle(titleText);
+        rec.setDateTime(localDateTime);
+        rec.setIsDone(switchMaterial.isChecked());
     }
 
     // dao からアップデート
@@ -222,20 +218,13 @@ public class UpdateModalFragment extends Fragment {
 
                 TimeTableEntity newRec = timeTableDao.getTargetRec(rec.id);
 
+                // モーダル閉じる
+                getActivity().getSupportFragmentManager().popBackStack();
+
                 // DateFragment へ通知 → adapter を更新
                 getParentFragmentManager().setFragmentResult("closeModal", null);
             }
         });
-    }
-
-    // モーダル閉じる
-    public void closeModal() {
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .setReorderingAllowed(true)
-                .remove(fragmentManager.findFragmentByTag("UpdateModalFragment"))
-                .addToBackStack("UpdateModalFragment")
-                .commit();
     }
 
     // 桁数をそろえる

@@ -38,6 +38,10 @@ public class TimeTableEntity implements Serializable {
         this.title = title;
     }
 
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
     public void setIsDone(Boolean isDone) {
         this.isDone = isDone;
     }

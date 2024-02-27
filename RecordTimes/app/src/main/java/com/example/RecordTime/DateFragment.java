@@ -110,10 +110,10 @@ public class DateFragment extends Fragment {
 
         // 時計マーク押下：モーダルを開く
         FloatingActionButton rec_only_time = (FloatingActionButton)view.findViewById(R.id.rec_only_time);
-        rec_only_time.setOnClickListener(new OpenModal("only_time"));
+        rec_only_time.setOnClickListener(new OpenInsertModal("only_time"));
         // プラスボタン押下：モーダルを開く
         FloatingActionButton rec_detail = (FloatingActionButton)view.findViewById(R.id.rec_detail);
-        rec_detail.setOnClickListener(new OpenModal("detail"));
+        rec_detail.setOnClickListener(new OpenInsertModal("detail"));
         // recyclerView押下：キーボードを閉じる
         recyclerView.setOnTouchListener(new CloseKeyboard());
 
@@ -156,9 +156,9 @@ public class DateFragment extends Fragment {
     }
 
     // モーダルを開くメソッド
-    public class OpenModal implements View.OnClickListener {
+    public class OpenInsertModal implements View.OnClickListener {
         String modalType;
-        public OpenModal(String val) {
+        public OpenInsertModal(String val) {
             this.modalType = val;
         }
 
@@ -199,7 +199,7 @@ public class DateFragment extends Fragment {
                     public void onClick(View view) {
                         // 日フラグメントを表示
                         getActivity().getSupportFragmentManager().beginTransaction()
-                                .add(R.id.activity_fragment_container, UpdateModalFragment.newInstance(rec), "UpdateModalFragment")
+                                .replace(R.id.activity_fragment_container, UpdateModalFragment.newInstance(rec), "UpdateModalFragment")
                                 .addToBackStack("UpdateModalFragment")
                                 .commit();
                     }
