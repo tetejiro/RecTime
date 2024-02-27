@@ -31,7 +31,6 @@ public class InsertModalFragment extends Fragment {
     String modalType;
 
     View view;
-    Boolean isDone = false;
 
     public InsertModalFragment() {
         // Required empty public constructor
@@ -70,20 +69,20 @@ public class InsertModalFragment extends Fragment {
         if(modalType.equals(ONLY_TIME_MODAL)) {
             // OKボタン押下；
             Button OK_button = view.findViewById(R.id.confirm_button);
-            OK_button.setOnClickListener(new ChainOfInsert());
+            OK_button.setOnClickListener(new InsertMethod());
         // detail モーダル
         } else {
             // 開始ボタン押下：インサート・モーダル閉じる・adapterに通知
             Button startButton = view.findViewById(R.id.start);
-            startButton.setOnClickListener(new ChainOfInsert());
+            startButton.setOnClickListener(new InsertMethod());
 
             Button endButton = view.findViewById(R.id.end);
-            endButton.setOnClickListener(new ChainOfInsert());
+            endButton.setOnClickListener(new InsertMethod());
         }
 
         // モーダルフラグメント上のバツボタン押下：モーダル閉じる
         FloatingActionButton closeButton = (FloatingActionButton) view.findViewById(R.id.close);
-        closeButton.setOnClickListener(new CloseModal());
+        closeButton.setOnClickListener((View v) -> removeModal());
     }
 
     /**
@@ -91,52 +90,56 @@ public class InsertModalFragment extends Fragment {
      *  引数無し：初期値をインサート
      *  引数：引数をインサート
      */
-    class ChainOfInsert implements View.OnClickListener {
+    class InsertMethod implements View.OnClickListener {
         @Override
-        public void onClick(View view) {
-            // ボタンの文字列が「終了」のみ：isDone を true にする。（デフォルトは true）
-            Button button = (Button)view;
-            isDone = button.getText().equals("終了");
+        public void onClick(View startButton) {
+            // インサートするレコードに値をセット
+            TimeTableEntity newRec = setNewVal(startButton);
 
-            // 別スレ生成 -> 開始
-            HandlerThread handlerThread = new HandlerThread("Insert");
-            handlerThread.start();
-            //作成したHandlerThread(別スレ)内部のLooperを引数として、HandlerThread(のLooper)にメッセージを送るHandlerを生成する。
-            Handler handler = new Handler(handlerThread.getLooper());
-            //Handlerのpostメソッドでメッセージ(タスク：重たい処理)を送信する。
-            handler.post(new InsertTimeTable());
+            // インサート処理
+            insertRec(newRec);
 
-
-            // 日フラグメントへ通知して　adapter.notifyDataSetChanged
-            getParentFragmentManager().setFragmentResult("closeModal", null);
             // モーダルフラグメントを取り外す
             removeModal();
         }
     }
 
-    // レコードをインサート
-    class InsertTimeTable implements Runnable {
-        String title = BLANK_TITLE;
-        @Override
-        public void run() {
-            // 時間のみモーダル　かつ　EditText が "" でない：BLANK_TITLE
-            EditText editText = (EditText) view.findViewById(R.id.contents);
-            if(!modalType.equals(ONLY_TIME_MODAL) && !editText.getText().toString().equals("")) {
-                title = editText.getText().toString();
-            }
-            AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
-                    AppDatabase.class, "TimeTable").build();
-            TimeTableDao timeTableDao = database.timeTableDao();
-            timeTableDao.insert(new TimeTableEntity(title, LocalDateTime.now(), isDone));
+    // インサートする値をセット
+    public TimeTableEntity setNewVal(View startButton) {
+        TimeTableEntity newRec = new TimeTableEntity(BLANK_TITLE, LocalDateTime.now(), false);
+
+        // ボタンの文字列が「終了」：isDone = true
+        Button button = (Button)startButton;
+        newRec.setIsDone(button.getText().equals("終了"));
+
+        // 時間のみモーダル　かつ　EditText が "" でない：BLANK_TITLE
+        EditText editText = (EditText) view.findViewById(R.id.contents);
+        if(!modalType.equals(ONLY_TIME_MODAL) && !editText.getText().toString().equals("")) {
+            newRec.setTitle(editText.getText().toString());
         }
+        return newRec;
     }
 
-    // モーダルの閉じるボタン
-    class CloseModal implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            removeModal();
-        }
+    // インサート処理
+    public void insertRec(TimeTableEntity newRec) {
+        // 別スレ生成 -> 開始
+        HandlerThread handlerThread = new HandlerThread("Insert");
+        handlerThread.start();
+        //作成したHandlerThread(別スレ)内部のLooperを引数として、HandlerThread(のLooper)にメッセージを送るHandlerを生成する。
+        Handler handler = new Handler(handlerThread.getLooper());
+        //Handlerのpostメソッドでメッセージ(タスク：重たい処理)を送信する。
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
+                        AppDatabase.class, "TimeTable").build();
+                TimeTableDao timeTableDao = database.timeTableDao();
+                timeTableDao.insert(newRec);
+
+                // 日フラグメントへ通知して（日フラグメントで adapter.notifyDataSetChanged ）
+                getParentFragmentManager().setFragmentResult("closeModal", null);
+            }
+        });
     }
 
     // モーダルフラグメントを外す

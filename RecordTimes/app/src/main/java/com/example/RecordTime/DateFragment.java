@@ -65,34 +65,14 @@ public class DateFragment extends Fragment {
         // 〇年・〇月・〇日を取得
         if (getArguments() != null) localDate = (LocalDate) getArguments().getSerializable("date");
 
-        // モーダルを閉じたら、ここに戻ってくる。
+        // インサート・アップデート・デリート後の処理
         getActivity().getSupportFragmentManager().setFragmentResultListener("closeModal", getActivity(), new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
 
-                // スレッド作成し、select して returnedTimeTableEntities を再取得
                 returnedTimeTableEntities.clear();
-                HandlerThread handlerThread = new HandlerThread("Select");
-                handlerThread.start();
-
-                Handler handler = new Handler(handlerThread.getLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
-                                AppDatabase.class, "TimeTable").build();
-                        TimeTableDao timeTableDao = database.timeTableDao();
-                        returnedTimeTableEntities.addAll(timeTableDao.getLimitedRecByDate(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay()));
-
-                        // 「メインスレッド」に adapter.notifyDataSetChanged() を依頼する。
-                        mainThreadHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.notifyDataSetChanged();
-                            }
-                        });
-                    }
-                });
+                // レコードを取得し直して、adapter.notifyDataSetChanged を依頼
+                setNewRec();
             }
         });
     }
@@ -252,5 +232,30 @@ public class DateFragment extends Fragment {
         public int getItemCount() {
             return returnedTimeTableEntities.size();
         }
+    }
+
+    //
+    public void setNewRec() {
+        HandlerThread handlerThread = new HandlerThread("Select");
+        handlerThread.start();
+
+        Handler handler = new Handler(handlerThread.getLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
+                        AppDatabase.class, "TimeTable").build();
+                TimeTableDao timeTableDao = database.timeTableDao();
+                returnedTimeTableEntities.addAll(timeTableDao.getLimitedRecByDate(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay()));
+
+                // 「メインスレッド」に adapter.notifyDataSetChanged() を依頼する。
+                mainThreadHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
     }
 }

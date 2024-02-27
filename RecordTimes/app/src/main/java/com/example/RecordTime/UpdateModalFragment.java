@@ -181,15 +181,6 @@ public class UpdateModalFragment extends Fragment {
         }
     }
 
-    // モーダル閉じる
-    public void closeModal() {
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .setReorderingAllowed(true)
-                .remove(fragmentManager.findFragmentByTag("UpdateModalFragment"))
-                .commit();
-    }
-
     // Rec に値をセット
     public void setRecNew() {
         // 時間取得　※ update_time(TextView) から取得
@@ -235,6 +226,16 @@ public class UpdateModalFragment extends Fragment {
                 getParentFragmentManager().setFragmentResult("closeModal", null);
             }
         });
+    }
+
+    // モーダル閉じる
+    public void closeModal() {
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .remove(fragmentManager.findFragmentByTag("UpdateModalFragment"))
+                .addToBackStack("UpdateModalFragment")
+                .commit();
     }
 
     // 桁数をそろえる
