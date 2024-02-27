@@ -1,56 +1,36 @@
 package com.example.RecordTime.Rooms;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
-@Entity(tableName = "time_table")
-public class TimeTableEntity {
+@Entity(tableName = "time_tables")
+public class TimeTableEntity implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
     public int id;
 
     @ColumnInfo(name = "title")
     @NonNull
     public String title;
 
-    @ColumnInfo(name = "datetime")
-    public LocalDateTime datetime;
+    @ColumnInfo(name = "date_time")
+    public LocalDateTime dateTime;
 
-    @ColumnInfo(name = "done")
-    public Boolean done;
+    @ColumnInfo(name = "is_done")
+    public Boolean isDone;
 
-    public TimeTableEntity(String title) {
+    public TimeTableEntity(String title, LocalDateTime dateTime, Boolean isDone) {
         this.title = title;
-        setDatetime();
-        this.done = false;
-    }
-
-    public void setTitle(String val) {
-        this.title = val;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public LocalDateTime getDatetime() {
-        return this.datetime;
-    }
-
-    public void setDatetime() {
-        this.datetime = LocalDateTime.now();
-    }
-
-    public Boolean isDone() {
-        return this.done;
-    }
-
-    public void setDone() {
-        this.done = !isDone();
+        this.dateTime = dateTime;
+        this.isDone = isDone;
     }
 }

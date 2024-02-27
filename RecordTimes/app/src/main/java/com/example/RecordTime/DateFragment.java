@@ -16,10 +16,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -84,7 +82,7 @@ public class DateFragment extends Fragment {
                         AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
                                 AppDatabase.class, "TimeTable").build();
                         TimeTableDao timeTableDao = database.timeTableDao();
-                        returnedTimeTableEntities.addAll(timeTableDao.getAll());
+                        returnedTimeTableEntities.addAll(timeTableDao.getLimitedRecByDate(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay()));
 
                         // 「メインスレッド」に adapter.notifyDataSetChanged() を依頼する。
                         mainThreadHandler.post(new Runnable() {
@@ -115,7 +113,7 @@ public class DateFragment extends Fragment {
         setDateText(view);
 
         // 表示するレコードを取得する
-        Thread thread = new Thread(new SelectTimeTableRec());
+        Thread thread = new Thread(new SelectTimeTableRec(localDate));
         thread.start();
 
         try {
@@ -163,13 +161,17 @@ public class DateFragment extends Fragment {
 
     // TimeTable レコードを取得（RecyclerView に渡す）
     public class SelectTimeTableRec implements Runnable {
+        LocalDate localDate;
+        SelectTimeTableRec(LocalDate localDate) {
+            this.localDate = localDate;
+        }
         @Override
         public void run() {
             returnedTimeTableEntities.clear();
             AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
                     AppDatabase.class, "TimeTable").build();
             timeTableDao = database.timeTableDao();
-            returnedTimeTableEntities.addAll(timeTableDao.getAll());
+            returnedTimeTableEntities.addAll(timeTableDao.getLimitedRecByDate(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay()));
         }
     }
 
@@ -205,12 +207,23 @@ public class DateFragment extends Fragment {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
 
+            TimeTableEntity rec;
             TextView textView;
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
 
                 this.textView = itemView.findViewById(R.id.every_time_table);
+                this.textView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // 日フラグメントを表示
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .add(R.id.activity_fragment_container, UpdateModalFragment.newInstance(rec), "UpdateModalFragment")
+                                .addToBackStack("UpdateModalFragment")
+                                .commit();
+                    }
+                });
             }
         }
 
@@ -223,15 +236,16 @@ public class DateFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            TimeTableEntity rec = returnedTimeTableEntities.get(position);
-            holder.textView.setText(String.valueOf(rec.id) + "/" + rec.title + " / " + formatDateTime(rec.datetime));
-            if (returnedTimeTableEntities.get(position).done) holder.textView.setBackgroundColor(Color.rgb(124,252,0)); // 赤
+            holder.rec = returnedTimeTableEntities.get(position);
+            holder.textView.setText(formatDateTime(holder.rec.dateTime) + " ： " + holder.rec.title);
+            if (holder.rec.isDone) holder.textView.setBackgroundColor(Color.rgb(124,252,0)); // 赤
             else holder.textView.setBackgroundColor(Color.rgb(249,247,57)); // 黄色
         }
 
-        private String formatDateTime(LocalDateTime date) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            return date.format(formatter);
+        private String formatDateTime(LocalDateTime dateTime) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            if (dateTime != null) return dateTime.format(formatter);
+            else return null;
         }
 
         @Override
