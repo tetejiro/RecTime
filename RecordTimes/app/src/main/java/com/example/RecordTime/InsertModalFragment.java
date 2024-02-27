@@ -10,6 +10,7 @@ import androidx.room.Room;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,7 @@ public class InsertModalFragment extends Fragment {
     String modalType;
 
     View view;
-    Boolean isDone;
+    Boolean isDone = false;
 
     public InsertModalFragment() {
         // Required empty public constructor
@@ -90,7 +91,6 @@ public class InsertModalFragment extends Fragment {
      *  引数無し：初期値をインサート
      *  引数：引数をインサート
      */
-    // テキストエディタから文字列を取得
     class ChainOfInsert implements View.OnClickListener {
         @Override
         public void onClick(View view) {
@@ -108,7 +108,7 @@ public class InsertModalFragment extends Fragment {
 
 
             // 日フラグメントへ通知して　adapter.notifyDataSetChanged
-            moveToDate();
+            getParentFragmentManager().setFragmentResult("closeModal", null);
             // モーダルフラグメントを取り外す
             removeModal();
         }
@@ -127,7 +127,7 @@ public class InsertModalFragment extends Fragment {
             AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
                     AppDatabase.class, "TimeTable").build();
             TimeTableDao timeTableDao = database.timeTableDao();
-            timeTableDao.insert(new TimeTableEntity(title, isDone));
+            timeTableDao.insert(new TimeTableEntity(title, LocalDateTime.now(), isDone));
         }
     }
 
@@ -143,13 +143,8 @@ public class InsertModalFragment extends Fragment {
     public void removeModal() {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
+                .setReorderingAllowed(true)
                 .remove(fragmentManager.findFragmentByTag("ModalFragment"))
                 .commit();
-    }
-
-    // 日フラグメントに通知する。(adapter.notifyDataSetChanged() を依頼するため)
-    public void moveToDate() {
-        getParentFragmentManager().setFragmentResult("closeModal", null);
     }
 }

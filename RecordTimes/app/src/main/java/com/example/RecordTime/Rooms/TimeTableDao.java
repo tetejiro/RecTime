@@ -1,9 +1,11 @@
 package com.example.RecordTime.Rooms;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,6 +16,12 @@ public interface TimeTableDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(TimeTableEntity timeTableEntity);
 
-    @Query("SELECT id, title, is_done FROM time_tables WHERE :start <= datetime AND datetime < :end")
+    @Query("SELECT id, title, date_time, is_done FROM time_tables WHERE :start <= date_time AND date_time < :end")
     List<TimeTableEntity> getLimitedRecByDate(LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT id, title, date_time, is_done FROM time_tables WHERE id = :id")
+    TimeTableEntity getTargetRec(int id);
+
+    @Update
+    void update(TimeTableEntity timeTableEntity);
 }

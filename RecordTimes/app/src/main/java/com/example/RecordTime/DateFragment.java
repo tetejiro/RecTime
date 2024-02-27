@@ -237,15 +237,15 @@ public class DateFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             holder.rec = returnedTimeTableEntities.get(position);
-            Log.d("----------->", holder.rec.datetime.toString());
-            holder.textView.setText(formatDateTime(holder.rec.datetime) + " ： " + holder.rec.title);
+            holder.textView.setText(formatDateTime(holder.rec.dateTime) + " ： " + holder.rec.title);
             if (holder.rec.isDone) holder.textView.setBackgroundColor(Color.rgb(124,252,0)); // 赤
             else holder.textView.setBackgroundColor(Color.rgb(249,247,57)); // 黄色
         }
 
         private String formatDateTime(LocalDateTime dateTime) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-            return dateTime.format(formatter);
+            if (dateTime != null) return dateTime.format(formatter);
+            else return null;
         }
 
         @Override
