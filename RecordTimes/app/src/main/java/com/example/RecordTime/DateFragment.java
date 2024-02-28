@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -201,7 +200,7 @@ public class DateFragment extends Fragment {
                     public void onClick(View view) {
                         // 日フラグメントを表示
                         getActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.activity_fragment_container, UpdateModalFragment.newInstance(rec), "UpdateModalFragment")
+                                .replace(R.id.activity_fragment_container, UpdateDeleteModalFragment.newInstance(rec), "UpdateModalFragment")
                                 .addToBackStack("UpdateModalFragment")
                                 .commit();
                     }

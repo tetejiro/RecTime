@@ -1,11 +1,9 @@
 package com.example.RecordTime;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
-import static androidx.core.content.ContextCompat.getSystemService;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,7 +19,6 @@ import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -41,7 +38,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-public class UpdateModalFragment extends Fragment {
+public class UpdateDeleteModalFragment extends Fragment {
 
     TimeTableEntity rec;
     View view;
@@ -49,8 +46,8 @@ public class UpdateModalFragment extends Fragment {
     LocalDate localDate;
     FrameLayout layout;
 
-    public static UpdateModalFragment newInstance(TimeTableEntity rec) {
-        UpdateModalFragment fragment = new UpdateModalFragment();
+    public static UpdateDeleteModalFragment newInstance(TimeTableEntity rec) {
+        UpdateDeleteModalFragment fragment = new UpdateDeleteModalFragment();
         Bundle args = new Bundle();
         args.putSerializable("rec", rec);
         fragment.setArguments(args);
@@ -73,7 +70,7 @@ public class UpdateModalFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_modal_update, container, false);
+        return inflater.inflate(R.layout.fragment_modal_update_delete, container, false);
     }
 
     @Override
@@ -103,6 +100,9 @@ public class UpdateModalFragment extends Fragment {
         // 更新ボタン：アップデート
         Button updateButton = view.findViewById(R.id.update_button);
         updateButton.setOnClickListener(new Update());
+
+        Button deleteButton = view.findViewById(R.id.delete_button);
+        deleteButton.setOnClickListener(new Delete());
     }
 
     // =======================  utility  ======================== //
@@ -238,8 +238,6 @@ public class UpdateModalFragment extends Fragment {
                 TimeTableDao timeTableDao = database.timeTableDao();
                 timeTableDao.update(rec);
 
-                TimeTableEntity newRec = timeTableDao.getTargetRec(rec.id);
-
                 // モーダル閉じる
                 getActivity().getSupportFragmentManager().popBackStack();
 
@@ -247,6 +245,35 @@ public class UpdateModalFragment extends Fragment {
                 getParentFragmentManager().setFragmentResult("closeModal", null);
             }
         });
+    }
+
+    // delete
+    class Delete implements View.OnClickListener {
+
+        @Override
+        public void onClick(View view) {
+            // 別スレ生成 -> 開始
+            HandlerThread handlerThread = new HandlerThread("Delete");
+            handlerThread.start();
+            //作成したHandlerThread(別スレ)内部のLooperを引数として、HandlerThread(のLooper)にメッセージを送るHandlerを生成する。
+            Handler handler = new Handler(handlerThread.getLooper());
+            //Handlerのpostメソッドでメッセージ(タスク：重たい処理)を送信する。
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
+                            AppDatabase.class, "TimeTable").build();
+                    TimeTableDao timeTableDao = database.timeTableDao();
+                    timeTableDao.delete(rec);
+
+                    // モーダル閉じる
+                    getActivity().getSupportFragmentManager().popBackStack();
+
+                    // DateFragment へ通知 → adapter を更新
+                    getParentFragmentManager().setFragmentResult("closeModal", null);
+                }
+            });
+        }
     }
 
     // 桁数をそろえる

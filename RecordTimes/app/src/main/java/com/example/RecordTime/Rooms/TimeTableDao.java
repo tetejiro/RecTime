@@ -24,4 +24,7 @@ public interface TimeTableDao {
 
     @Update
     void update(TimeTableEntity timeTableEntity);
+
+    @Delete
+    void delete(TimeTableEntity timeTableEntity);
 }
