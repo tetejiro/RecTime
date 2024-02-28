@@ -237,9 +237,6 @@ public class UpdateDeleteModalFragment extends Fragment {
                 TimeTableDao timeTableDao = database.timeTableDao();
                 timeTableDao.update(rec);
 
-                TimeTableEntity updatedRec = timeTableDao.getTargetRec(rec.id);
-                Log.d("updatedRec===============>", updatedRec.getDateTime().toString());
-
                 // モーダル閉じる
                 getActivity().getSupportFragmentManager().popBackStack();
 

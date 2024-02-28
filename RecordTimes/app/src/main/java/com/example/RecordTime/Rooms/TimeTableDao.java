@@ -22,12 +22,6 @@ public interface TimeTableDao {
     @Update
     void update(TimeTableEntity timeTableEntity);
 
-    @Query("SELECT * FROM time_tables WHERE id = :id")
-    TimeTableEntity getTargetRec(int id);
-
-    @Query("SELECT * FROM time_tables")
-    List<TimeTableEntity> getAll();
-
     @Delete
     void delete(TimeTableEntity timeTableEntity);
 }

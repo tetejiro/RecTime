@@ -31,17 +31,19 @@
 
             <TextView
                 android:id="@+id/year"
-                android:layout_width="120dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:padding="2sp"
                 android:text="@string/fuu"
                 android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/month"
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:padding="2sp"
                 android:text="@string/month"
                 android:textSize="16sp" />
 

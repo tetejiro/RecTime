@@ -65,11 +65,10 @@ public class DateFragment extends Fragment {
                 "closeModal",
                 getActivity(),
                 (@NonNull String requestKey, @NonNull Bundle result) -> {
-                    returnedTimeTableEntities.clear();
+                    returnedTimeTableEntities = new ArrayList<>();
                     // レコードを取得し直して、adapter.notifyDataSetChanged を依頼
                     setNewRec();
-                }
-        );
+                });
     }
 
     @Override
@@ -91,7 +90,7 @@ public class DateFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
-        // 表示するレコードを取得する
+        // 表示するレコードを取得・adapter に通知
         setNewRec();
 
         // ============ モーダル関連 ===============
@@ -175,8 +174,7 @@ public class DateFragment extends Fragment {
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             holder.rec = returnedTimeTableEntities.get(position);
             holder.textView.setText(formatDateTime(holder.rec.dateTime) + " ： " + holder.rec.title);
-            if (holder.rec.isDone) holder.textView.setBackgroundColor(Color.rgb(124,252,0)); // 赤
-            else holder.textView.setBackgroundColor(Color.rgb(249,247,57)); // 黄色
+            if (holder.rec.isDone) holder.textView.setBackgroundColor(Color.rgb(224,224,224)); // grey_300
         }
 
         private String formatDateTime(LocalDateTime dateTime) {
