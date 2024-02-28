@@ -58,9 +58,7 @@ public class UpdateDeleteModalFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            this.rec = (TimeTableEntity) getArguments().getSerializable("rec");
-        }
+        if (getArguments() != null) this.rec = (TimeTableEntity) getArguments().getSerializable("rec");
 
         // 更新する際の値のデフォルト値をセット（更新する際の値はこれを使う）
         localDate = localDate.of(rec.dateTime.getYear(), rec.dateTime.getMonthValue(), rec.dateTime.getDayOfMonth());
@@ -78,11 +76,11 @@ public class UpdateDeleteModalFragment extends Fragment {
 
         this.view = view;
 
-        // キーボードを下げる
+        // 背景タップ：キーボードを下げる
         layout = (FrameLayout) view.findViewById(R.id.modal_update);
         layout.setOnTouchListener(new RemoveKeyboard());
 
-        // 初期値セット
+        // 各初期値セット
         setDefaultValue(view);
 
         // カレンダータップ：新たな日付を localDate にセット
@@ -101,6 +99,7 @@ public class UpdateDeleteModalFragment extends Fragment {
         Button updateButton = view.findViewById(R.id.update_button);
         updateButton.setOnClickListener(new Update());
 
+        // 削除ボタン：delete
         Button deleteButton = view.findViewById(R.id.delete_button);
         deleteButton.setOnClickListener(new Delete());
     }
@@ -142,7 +141,7 @@ public class UpdateDeleteModalFragment extends Fragment {
     class SetLocalDate implements CalendarView.OnDateChangeListener {
         @Override
         public void onSelectedDayChange(@NonNull CalendarView calendarView, int year, int month, int date) {
-            localDate = localDate.of(year, month, date);
+            localDate = localDate.of(year, month, date).plusMonths(1);
         }
     }
 
@@ -200,7 +199,7 @@ public class UpdateDeleteModalFragment extends Fragment {
         }
     }
 
-    // Rec に値をセット
+    // Rec に値をセット(update)
     public void setRecNew() {
         // 時間取得　※ update_time(TextView) から取得
         TextView update_time = view.findViewById(R.id.update_time);
@@ -222,7 +221,7 @@ public class UpdateDeleteModalFragment extends Fragment {
         rec.setIsDone(switchMaterial.isChecked());
     }
 
-    // dao からアップデート
+    // dao (update)
     public void updateRec() {
         // 別スレ生成 -> 開始
         HandlerThread handlerThread = new HandlerThread("Update");
@@ -237,6 +236,9 @@ public class UpdateDeleteModalFragment extends Fragment {
                         AppDatabase.class, "TimeTable").build();
                 TimeTableDao timeTableDao = database.timeTableDao();
                 timeTableDao.update(rec);
+
+                TimeTableEntity updatedRec = timeTableDao.getTargetRec(rec.id);
+                Log.d("updatedRec===============>", updatedRec.getDateTime().toString());
 
                 // モーダル閉じる
                 getActivity().getSupportFragmentManager().popBackStack();

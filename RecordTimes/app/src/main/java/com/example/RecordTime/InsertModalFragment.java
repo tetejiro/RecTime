@@ -1,10 +1,13 @@
 package com.example.RecordTime;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.room.Room;
 
@@ -12,10 +15,13 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
 import com.example.RecordTime.Rooms.AppDatabase;
 import com.example.RecordTime.Rooms.TimeTableDao;
@@ -27,7 +33,6 @@ import java.time.LocalDateTime;
 public class InsertModalFragment extends Fragment {
     private final String ONLY_TIME_MODAL = "only_time";
     private final String BLANK_TITLE = "未入力";
-
     String modalType;
 
     View view;
@@ -70,14 +75,22 @@ public class InsertModalFragment extends Fragment {
             // OKボタン押下；
             Button OK_button = view.findViewById(R.id.confirm_button);
             OK_button.setOnClickListener(new InsertMethod());
+
         // detail モーダル
         } else {
             // 開始ボタン押下：インサート・モーダル閉じる・adapterに通知
             Button startButton = view.findViewById(R.id.start);
             startButton.setOnClickListener(new InsertMethod());
 
+            // 削除ボタン押下：delete・モーダル閉じる・adapterに通知
             Button endButton = view.findViewById(R.id.end);
             endButton.setOnClickListener(new InsertMethod());
+
+            // レイアウトタップ：キーボードを下げる
+            View layout = (FrameLayout)view.findViewById(R.id.fragment_modal_detail);
+            layout.setOnTouchListener(new SetKeyboardDown(layout));
+            View containerView = (FragmentContainerView)getActivity().findViewById(R.id.activity_fragment_container);
+            containerView.setOnTouchListener(new SetKeyboardDown(containerView));
         }
 
         // モーダルフラグメント上のバツボタン押下：モーダル閉じる
@@ -145,5 +158,19 @@ public class InsertModalFragment extends Fragment {
     // モーダルフラグメントを外す
     public void removeModal() {
         getActivity().getSupportFragmentManager().popBackStack();
+    }
+
+    // キーボードを下げる
+    class SetKeyboardDown implements View.OnTouchListener {
+        View layout;
+        public SetKeyboardDown(View layout) {
+            this.layout = layout;
+        }
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(layout.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            return false;
+        }
     }
 }
