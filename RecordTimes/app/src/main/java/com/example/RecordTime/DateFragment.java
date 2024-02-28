@@ -37,6 +37,8 @@ import java.util.List;
 
 public class DateFragment extends Fragment {
 
+    // TODO: isDone の背景色を変える
+
     LocalDate localDate;
     RecyclerView recyclerView;
     Adapter adapter = new Adapter();

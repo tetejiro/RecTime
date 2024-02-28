@@ -1,7 +1,11 @@
 package com.example.RecordTime;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,11 +13,15 @@ import android.os.HandlerThread;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -39,6 +47,7 @@ public class UpdateModalFragment extends Fragment {
     View view;
     TextView update_time;
     LocalDate localDate;
+    FrameLayout layout;
 
     public static UpdateModalFragment newInstance(TimeTableEntity rec) {
         UpdateModalFragment fragment = new UpdateModalFragment();
@@ -72,6 +81,10 @@ public class UpdateModalFragment extends Fragment {
 
         this.view = view;
 
+        // キーボードを下げる
+        layout = (FrameLayout) view.findViewById(R.id.modal_update);
+        layout.setOnTouchListener(new RemoveKeyboard());
+
         // 初期値セット
         setDefaultValue(view);
 
@@ -93,6 +106,16 @@ public class UpdateModalFragment extends Fragment {
     }
 
     // =======================  utility  ======================== //
+
+    // キーボードを下げる
+    class RemoveKeyboard implements View.OnTouchListener {
+        @Override
+        public boolean onTouch(android.view.View view, MotionEvent motionEvent) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(layout.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            return false;
+        }
+    }
 
     // デフォルト値セット
     public void setDefaultValue(View view) {
@@ -185,7 +208,6 @@ public class UpdateModalFragment extends Fragment {
         int setHour = Integer.parseInt(val.substring(0,2));
         int setMinute = Integer.parseInt(val.substring(3));
         LocalTime localTime = LocalTime.of(setHour, setMinute);
-        Log.d("LocalTime=======>", String.valueOf(localTime));
 
         // 日付・時間
         LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);

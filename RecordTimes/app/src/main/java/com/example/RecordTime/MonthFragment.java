@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ import java.time.temporal.TemporalAdjusters;
 
 
 public class MonthFragment extends Fragment {
+
+    // TODO: スワイプで月を移動する(ViewPager2で書く)・今日へ移動ボタンを作る
 
     YearMonth yearMonth = YearMonth.now();
     View view;
@@ -154,10 +157,17 @@ public class MonthFragment extends Fragment {
             // 今日：背景ON
             if (holder.date.isEqual(LocalDate.now())) holder.dateButton.setBackgroundColor(Color.rgb(223,204,204));
 
-            // 先月：グレー
-            if (position - dayOfWeek < 0) holder.dateButton.setTextColor(Color.GRAY);
-            // 来月：グレー
-            if (lastDate < (position + 1) - dayOfWeek) holder.dateButton.setTextColor(Color.rgb(189,189,189));
+            // 日付（全部）：黒
+            holder.dateButton.setTextColor(Color.BLACK);
+
+            // 先月日付：グレー
+            if (position - dayOfWeek < 0) {
+                holder.dateButton.setTextColor(Color.GRAY);
+            }
+            // 来月日付：グレー
+            if (lastDate < (position + 1) - dayOfWeek) {
+                holder.dateButton.setTextColor(Color.rgb(189,189,189));
+            }
         }
 
         // 繰り返す回数

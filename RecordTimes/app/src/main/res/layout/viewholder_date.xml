@@ -8,14 +8,14 @@
 
     <Button
         android:id="@+id/every_date"
-        android:layout_width="60dp"
-        android:layout_height="118dp"
+        android:layout_width="wrap_content"
+        android:layout_height="122dp"
         android:background="@drawable/border_date"
         android:clickable="true"
         android:gravity="top|left"
         android:paddingLeft="6dp"
+        android:paddingTop="2dp"
         android:text="@string/fuu"
-        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
