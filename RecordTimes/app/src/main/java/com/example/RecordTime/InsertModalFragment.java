@@ -29,9 +29,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.time.LocalDateTime;
 
 public class InsertModalFragment extends Fragment {
-    private final String ONLY_TIME_MODAL = "only_time";
+
     private final String BLANK_TITLE = "未入力";
-    String modalType;
 
     View view;
 
@@ -39,62 +38,46 @@ public class InsertModalFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static InsertModalFragment newInstance(String val) {
-        InsertModalFragment fragment = new InsertModalFragment();
-        Bundle args = new Bundle();
-        args.putString("modalType", val);
-        fragment.setArguments(args);
-        return fragment;
+    public static InsertModalFragment newInstance() {
+        return new InsertModalFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            modalType = getArguments().get("modalType").toString();
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        int resource;
-        if (modalType.equals(ONLY_TIME_MODAL)) resource = R.layout.fragment_modal_only_time;
-        else resource = R.layout.fragment_modal_detail;
-        return inflater.inflate(resource, container, false);
+
+        return inflater.inflate(R.layout.fragment_modal_insert, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         this.view = view;
 
-        // only_time モーダル
-        if(modalType.equals(ONLY_TIME_MODAL)) {
-            // OKボタン押下；
-            Button OK_button = view.findViewById(R.id.confirm_button);
-            OK_button.setOnClickListener(new InsertMethod());
+        // 開始ボタン押下：インサート（isDone = false）・モーダル閉じる・adapterに通知
+        Button startButton = view.findViewById(R.id.start);
+        startButton.setOnClickListener(new InsertMethod());
 
-        // detail モーダル
-        } else {
-            // 開始ボタン押下：インサート・モーダル閉じる・adapterに通知
-            Button startButton = view.findViewById(R.id.start);
-            startButton.setOnClickListener(new InsertMethod());
+        // 終了ボタン押下：インサート（isDone = true）・モーダル閉じる・adapterに通知
+        Button endButton = view.findViewById(R.id.end);
+        endButton.setOnClickListener(new InsertMethod());
 
-            // 削除ボタン押下：delete・モーダル閉じる・adapterに通知
-            Button endButton = view.findViewById(R.id.end);
-            endButton.setOnClickListener(new InsertMethod());
-
-            // レイアウトタップ：キーボードを下げる
-            View layout = (FrameLayout)view.findViewById(R.id.fragment_modal_detail);
-            layout.setOnTouchListener(new SetKeyboardDown(layout));
-            View containerView = (FragmentContainerView)getActivity().findViewById(R.id.activity_fragment_container);
-            containerView.setOnTouchListener(new SetKeyboardDown(containerView));
-        }
+        // レイアウトタップ：キーボードを下げる
+        View layout = (FrameLayout)view.findViewById(R.id.fragment_modal_insert);
+        layout.setOnTouchListener(new SetKeyboardDown(layout)); // モーダル部分
+        View containerView = (FragmentContainerView)getActivity().findViewById(R.id.activity_fragment_container);
+        containerView.setOnTouchListener(new SetKeyboardDown(containerView)); // モーダルの周り
 
         // モーダルフラグメント上のバツボタン押下：モーダル閉じる
         FloatingActionButton closeButton = (FloatingActionButton) view.findViewById(R.id.close);
         closeButton.setOnClickListener((View v) -> removeModal());
     }
+
+    // ======================== Utility =========================== //
 
     /**
      *  インサート・モーダル閉じる・adapterに通知
@@ -120,9 +103,9 @@ public class InsertModalFragment extends Fragment {
         Button button = (Button)startButton;
         newRec.setIsDone(button.getText().equals("終了"));
 
-        // 時間のみモーダル　かつ　EditText が "" でない：BLANK_TITLE
+        // EditText が "" でない：入力された文字
         EditText editText = (EditText) view.findViewById(R.id.contents);
-        if(!modalType.equals(ONLY_TIME_MODAL) && !editText.getText().toString().equals("")) {
+        if(!editText.getText().toString().equals("")) {
             newRec.setTitle(editText.getText().toString());
         }
         return newRec;
@@ -153,7 +136,7 @@ public class InsertModalFragment extends Fragment {
         });
     }
 
-    // モーダルフラグメントを外す
+    // このモーダルフラグメントを外す
     public void removeModal() {
         getActivity().getSupportFragmentManager().popBackStack();
     }

@@ -92,12 +92,9 @@ public class DateFragment extends Fragment {
 
         // ============ モーダル関連 ===============
 
-        // 時計マーク押下：モーダルを開く
-        FloatingActionButton rec_only_time = (FloatingActionButton)view.findViewById(R.id.rec_only_time);
-        rec_only_time.setOnClickListener(new OpenInsertModal("only_time"));
         // プラスボタン押下：モーダルを開く
         FloatingActionButton rec_detail = (FloatingActionButton)view.findViewById(R.id.rec_detail);
-        rec_detail.setOnClickListener(new OpenInsertModal("detail"));
+        rec_detail.setOnClickListener(new OpenInsertModal());
     }
 
 
@@ -121,17 +118,10 @@ public class DateFragment extends Fragment {
 
     // モーダルを開くメソッド
     public class OpenInsertModal implements View.OnClickListener {
-        String modalType;
-        public OpenInsertModal(String val) {
-            this.modalType = val;
-        }
 
         @Override
         public void onClick(View view) {
-            Bundle args = new Bundle();
-            args.putString("modalType", modalType);
-            args.putSerializable("date", localDate);
-            getParentFragmentManager().setFragmentResult("popModalOnDate", args);
+            getParentFragmentManager().setFragmentResult("popModalOnDate", null);
         }
     }
 

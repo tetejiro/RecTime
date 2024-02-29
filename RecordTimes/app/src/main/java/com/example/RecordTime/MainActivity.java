@@ -42,14 +42,13 @@ public class MainActivity extends FragmentActivity {
         getSupportFragmentManager().setFragmentResultListener("popModalOnDate", this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                String modalType = result.getString("modalType");
 
                 // 日付フラグメントの上にモーダルフラグメントを置く
                 Fragment fragment = getSupportFragmentManager().findFragmentByTag("ModalFragment");
                 if(fragment == null || !fragment.isVisible()) {
                         getSupportFragmentManager().beginTransaction()
                             .setReorderingAllowed(true)
-                            .replace(R.id.activity_fragment_container, InsertModalFragment.newInstance(modalType), "InsertModalFragment")
+                            .replace(R.id.activity_fragment_container, InsertModalFragment.newInstance(), "InsertModalFragment")
                             .addToBackStack("InsertModalFragment")
                             .commit();
                 }
