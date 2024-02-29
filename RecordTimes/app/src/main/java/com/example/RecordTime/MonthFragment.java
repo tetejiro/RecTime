@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -161,13 +160,10 @@ public class MonthFragment extends Fragment {
             holder.dateButton.setTextColor(Color.BLACK);
 
             // 先月日付：グレー
-            if (position - dayOfWeek < 0) {
-                holder.dateButton.setTextColor(Color.GRAY);
-            }
+            if (position - dayOfWeek < 0) holder.dateButton.setTextColor(Color.GRAY);
+
             // 来月日付：グレー
-            if (lastDate < (position + 1) - dayOfWeek) {
-                holder.dateButton.setTextColor(Color.rgb(189,189,189));
-            }
+            if (lastDate < (position + 1) - dayOfWeek) holder.dateButton.setTextColor(Color.rgb(189,189,189));
         }
 
         // 繰り返す回数

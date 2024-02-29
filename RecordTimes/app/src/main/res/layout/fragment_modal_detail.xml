@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_modal_detail"
-    android:layout_width="320dp"
+    android:layout_width="360dp"
     android:layout_height="320dp"
     android:layout_gravity="center"
     android:background="@drawable/modal_border"
@@ -29,6 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:layout_margin="10dp"
             android:clickable="true"
             android:src="@android:drawable/ic_menu_close_clear_cancel" />
 

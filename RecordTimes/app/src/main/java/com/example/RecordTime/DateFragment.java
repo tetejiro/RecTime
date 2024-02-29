@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -34,8 +33,6 @@ import java.util.List;
 
 
 public class DateFragment extends Fragment {
-
-    // TODO: isDone の背景色を変える
 
     LocalDate localDate;
     Adapter adapter = new Adapter();
