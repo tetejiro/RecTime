@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -42,7 +43,6 @@ public class UpdateDeleteModalFragment extends Fragment {
     TimeTableEntity rec;
     View view;
     TextView update_time;
-    LocalDate localDate;
     FrameLayout layout;
 
     public static UpdateDeleteModalFragment newInstance(TimeTableEntity rec) {
@@ -58,9 +58,6 @@ public class UpdateDeleteModalFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) this.rec = (TimeTableEntity) getArguments().getSerializable("rec");
-
-        // 更新する際の値のデフォルト値をセット（更新する際の値はこれを使う）
-        localDate = localDate.of(rec.dateTime.getYear(), rec.dateTime.getMonthValue(), rec.dateTime.getDayOfMonth());
     }
 
     @Override
@@ -140,7 +137,9 @@ public class UpdateDeleteModalFragment extends Fragment {
     class SetLocalDate implements CalendarView.OnDateChangeListener {
         @Override
         public void onSelectedDayChange(@NonNull CalendarView calendarView, int year, int month, int date) {
-            localDate = localDate.of(year, month, date).plusMonths(1);
+            LocalDate localDate = LocalDate.of(year, month, date).plusMonths(1);
+            LocalTime localTime = LocalTime.of(rec.getDateTime().getHour(), rec.getDateTime().getMinute());
+            rec.setDateTime(LocalDateTime.of(localDate, localTime));
         }
     }
 
@@ -154,7 +153,7 @@ public class UpdateDeleteModalFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            DialogFragment newFragment = new TimePickerFragment(rec.dateTime.getHour(), rec.dateTime.getMinute(), this.view);
+            DialogFragment newFragment = new TimePickerFragment(rec, this.view);
             newFragment.show(getActivity().getSupportFragmentManager(), "timePicker");
         }
     }
@@ -163,24 +162,29 @@ public class UpdateDeleteModalFragment extends Fragment {
     public static class TimePickerFragment extends DialogFragment
             implements TimePickerDialog.OnTimeSetListener {
 
-        int hour;
-        int minute;
+        TimeTableEntity rec;
+        LocalDateTime localDateTime;
         View view;
 
-        public TimePickerFragment(int hour, int minute, View view) {
-            this.hour = hour;
-            this.minute = minute;
+        public TimePickerFragment(TimeTableEntity rec, View view) {
+            this.rec = rec;
+            this.localDateTime = rec.getDateTime();
             this.view = view;
         }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Create a new instance of TimePickerDialog and return it
-            return new TimePickerDialog(getActivity(), this, hour, minute,
+            return new TimePickerDialog(getActivity(), this, localDateTime.getHour(), localDateTime.getMinute(),
                     DateFormat.is24HourFormat(getActivity()));
         }
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            // 時間変更後、TimePickerの初期値は変更された値：初期値である rec の LocalDateTime を選択された値に更新
+            LocalDate date = LocalDate.of(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth());
+            rec.setDateTime(LocalDateTime.of(date, LocalTime.of(hourOfDay, minute)));
+
+            // テキストとして表示
             TextView update_time = this.view.findViewById(R.id.update_time);
             update_time.setText(twoDigit(hourOfDay) + ":" + twoDigit(minute));
         }
@@ -200,24 +204,16 @@ public class UpdateDeleteModalFragment extends Fragment {
 
     // Rec に値をセット(update)
     public void setRecNew() {
-        // 時間取得　※ update_time(TextView) から取得
-        TextView update_time = view.findViewById(R.id.update_time);
-        String val = update_time.getText().toString();
-        int setHour = Integer.parseInt(val.substring(0,2));
-        int setMinute = Integer.parseInt(val.substring(3));
-        LocalTime localTime = LocalTime.of(setHour, setMinute);
 
-        // 日付・時間
-        LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
         // 完了
         SwitchMaterial switchMaterial = view.findViewById(R.id.update_done);
+        rec.setIsDone(switchMaterial.isChecked());
         // タイトル
         TextView title = view.findViewById(R.id.update_title);
         String titleText = title.getText().toString();
-
         rec.setTitle(titleText);
-        rec.setDateTime(localDateTime);
-        rec.setIsDone(switchMaterial.isChecked());
+
+        // ※日付・時間は都度変更されている。
     }
 
     // dao (update)
