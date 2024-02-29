@@ -5,8 +5,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -18,7 +16,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
-import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -38,14 +35,9 @@ import java.util.List;
 public class DateFragment extends Fragment {
 
     LocalDate localDate;
-    RecyclerView recyclerView;
     Adapter adapter = new Adapter();
     Handler mainThreadHandler = new Handler();
-
     List<TimeTableEntity> returnedTimeTableEntities = new ArrayList<>();
-
-    TimeTableDao timeTableDao;
-
     InputMethodManager inputMethodManager;
 
     public static DateFragment newInstance(LocalDate localDate) {
@@ -65,36 +57,15 @@ public class DateFragment extends Fragment {
         // 〇年・〇月・〇日を取得
         if (getArguments() != null) localDate = (LocalDate) getArguments().getSerializable("date");
 
-        // モーダルを閉じたら、ここに戻ってくる。
-        getActivity().getSupportFragmentManager().setFragmentResultListener("closeModal", getActivity(), new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-
-                // スレッド作成し、select して returnedTimeTableEntities を再取得
-                returnedTimeTableEntities.clear();
-                HandlerThread handlerThread = new HandlerThread("Select");
-                handlerThread.start();
-
-                Handler handler = new Handler(handlerThread.getLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
-                                AppDatabase.class, "TimeTable").build();
-                        TimeTableDao timeTableDao = database.timeTableDao();
-                        returnedTimeTableEntities.addAll(timeTableDao.getLimitedRecByDate(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay()));
-
-                        // 「メインスレッド」に adapter.notifyDataSetChanged() を依頼する。
-                        mainThreadHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.notifyDataSetChanged();
-                            }
-                        });
-                    }
+        // インサート・アップデート・デリート後の処理
+        getActivity().getSupportFragmentManager().setFragmentResultListener(
+                "closeModal",
+                getActivity(),
+                (@NonNull String requestKey, @NonNull Bundle result) -> {
+                    returnedTimeTableEntities = new ArrayList<>();
+                    // レコードを取得し直して、adapter.notifyDataSetChanged を依頼
+                    setNewRec();
                 });
-            }
-        });
     }
 
     @Override
@@ -107,37 +78,26 @@ public class DateFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
-        this.recyclerView = view.findViewById(R.id.time_table_recycler_view);
-
         // 〇年〇月〇日をセット
         setDateText(view);
 
-        // 表示するレコードを取得する
-        Thread thread = new Thread(new SelectTimeTableRec(localDate));
-        thread.start();
+        // RecyclerView をセット
+        RecyclerView recyclerView = view.findViewById(R.id.time_table_recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
 
-        try {
-            thread.join();
-            // RecyclerView をセット
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-            recyclerView.setAdapter(adapter);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        // 表示するレコードを取得・adapter に通知
+        setNewRec();
 
         // ============ モーダル関連 ===============
 
         // 時計マーク押下：モーダルを開く
         FloatingActionButton rec_only_time = (FloatingActionButton)view.findViewById(R.id.rec_only_time);
-        rec_only_time.setOnClickListener(new OpenModal("only_time"));
+        rec_only_time.setOnClickListener(new OpenInsertModal("only_time"));
         // プラスボタン押下：モーダルを開く
         FloatingActionButton rec_detail = (FloatingActionButton)view.findViewById(R.id.rec_detail);
-        rec_detail.setOnClickListener(new OpenModal("detail"));
-        // recyclerView押下：キーボードを閉じる
-        recyclerView.setOnTouchListener(new CloseKeyboard());
-
-        // TODO: 背景タップ時、モーダル非表示（キーワード表示されている場合キーボードのみ非表示）
+        rec_detail.setOnClickListener(new OpenInsertModal("detail"));
     }
 
 
@@ -159,26 +119,10 @@ public class DateFragment extends Fragment {
         date_text.setText(localDate.getDayOfMonth() + " 日");
     }
 
-    // TimeTable レコードを取得（RecyclerView に渡す）
-    public class SelectTimeTableRec implements Runnable {
-        LocalDate localDate;
-        SelectTimeTableRec(LocalDate localDate) {
-            this.localDate = localDate;
-        }
-        @Override
-        public void run() {
-            returnedTimeTableEntities.clear();
-            AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
-                    AppDatabase.class, "TimeTable").build();
-            timeTableDao = database.timeTableDao();
-            returnedTimeTableEntities.addAll(timeTableDao.getLimitedRecByDate(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay()));
-        }
-    }
-
     // モーダルを開くメソッド
-    public class OpenModal implements View.OnClickListener {
+    public class OpenInsertModal implements View.OnClickListener {
         String modalType;
-        public OpenModal(String val) {
+        public OpenInsertModal(String val) {
             this.modalType = val;
         }
 
@@ -188,17 +132,6 @@ public class DateFragment extends Fragment {
             args.putString("modalType", modalType);
             args.putSerializable("date", localDate);
             getParentFragmentManager().setFragmentResult("popModalOnDate", args);
-        }
-    }
-
-    // キーボードを非表示にするイベントリスナー（onTouch）
-    public class CloseKeyboard implements View.OnTouchListener {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            //キーボードを非表示にする
-            inputMethodManager.hideSoftInputFromWindow(recyclerView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-
-            return false;
         }
     }
 
@@ -219,7 +152,7 @@ public class DateFragment extends Fragment {
                     public void onClick(View view) {
                         // 日フラグメントを表示
                         getActivity().getSupportFragmentManager().beginTransaction()
-                                .add(R.id.activity_fragment_container, UpdateModalFragment.newInstance(rec), "UpdateModalFragment")
+                                .replace(R.id.activity_fragment_container, UpdateDeleteModalFragment.newInstance(rec), "UpdateModalFragment")
                                 .addToBackStack("UpdateModalFragment")
                                 .commit();
                     }
@@ -238,8 +171,7 @@ public class DateFragment extends Fragment {
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             holder.rec = returnedTimeTableEntities.get(position);
             holder.textView.setText(formatDateTime(holder.rec.dateTime) + " ： " + holder.rec.title);
-            if (holder.rec.isDone) holder.textView.setBackgroundColor(Color.rgb(124,252,0)); // 赤
-            else holder.textView.setBackgroundColor(Color.rgb(249,247,57)); // 黄色
+            if (holder.rec.isDone) holder.textView.setBackgroundColor(Color.rgb(224,224,224)); // grey_300
         }
 
         private String formatDateTime(LocalDateTime dateTime) {
@@ -252,5 +184,30 @@ public class DateFragment extends Fragment {
         public int getItemCount() {
             return returnedTimeTableEntities.size();
         }
+    }
+
+    public void setNewRec() {
+        HandlerThread handlerThread = new HandlerThread("Select");
+        handlerThread.start();
+
+        Handler handler = new Handler(handlerThread.getLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                returnedTimeTableEntities = new ArrayList<>();
+                AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
+                        AppDatabase.class, "TimeTable").build();
+                TimeTableDao timeTableDao = database.timeTableDao();
+                returnedTimeTableEntities.addAll(timeTableDao.getLimitedRecByDate(localDate.atStartOfDay(), localDate.plusDays(1).atStartOfDay()));
+
+                // 「メインスレッド」に adapter.notifyDataSetChanged() を依頼する。
+                mainThreadHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
     }
 }

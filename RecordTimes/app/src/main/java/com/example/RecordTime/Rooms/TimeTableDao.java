@@ -16,12 +16,12 @@ public interface TimeTableDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(TimeTableEntity timeTableEntity);
 
-    @Query("SELECT id, title, date_time, is_done FROM time_tables WHERE :start <= date_time AND date_time < :end")
+    @Query("SELECT id, title, date_time, is_done FROM time_tables WHERE :start <= date_time AND date_time < :end ORDER BY date_time ASC")
     List<TimeTableEntity> getLimitedRecByDate(LocalDateTime start, LocalDateTime end);
-
-    @Query("SELECT id, title, date_time, is_done FROM time_tables WHERE id = :id")
-    TimeTableEntity getTargetRec(int id);
 
     @Update
     void update(TimeTableEntity timeTableEntity);
+
+    @Delete
+    void delete(TimeTableEntity timeTableEntity);
 }

@@ -20,8 +20,7 @@ public class MainActivity extends FragmentActivity {
         if(savedInstanceState == null){
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)//トランザクションに関与するフラグメントの状態変更を最適化
-                    .add(R.id.activity_fragment_container, MonthFragment.newInstance())
-                    .addToBackStack("MonthFragment")
+                    .replace(R.id.activity_fragment_container, MonthFragment.newInstance())
                     .commit();
         }
 
@@ -39,7 +38,7 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        // 日フラグメント → モーダルを載せる。
+        // 日フラグメント → インサートモーダルを載せる。
         getSupportFragmentManager().setFragmentResultListener("popModalOnDate", this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
@@ -50,8 +49,8 @@ public class MainActivity extends FragmentActivity {
                 if(fragment == null || !fragment.isVisible()) {
                         getSupportFragmentManager().beginTransaction()
                             .setReorderingAllowed(true)
-                            .add(R.id.activity_fragment_container, InsertModalFragment.newInstance(modalType), "ModalFragment")
-                            .addToBackStack("ModalFragment")
+                            .replace(R.id.activity_fragment_container, InsertModalFragment.newInstance(modalType), "InsertModalFragment")
+                            .addToBackStack("InsertModalFragment")
                             .commit();
                 }
             }

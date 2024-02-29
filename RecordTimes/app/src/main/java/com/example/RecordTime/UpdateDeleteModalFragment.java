@@ -1,5 +1,7 @@
 package com.example.RecordTime;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
+
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.icu.util.Calendar;
@@ -7,13 +9,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -21,7 +25,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.room.Room;
 
 import com.example.RecordTime.Rooms.AppDatabase;
@@ -34,15 +37,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-public class UpdateModalFragment extends Fragment {
+public class UpdateDeleteModalFragment extends Fragment {
 
     TimeTableEntity rec;
     View view;
     TextView update_time;
     LocalDate localDate;
+    FrameLayout layout;
 
-    public static UpdateModalFragment newInstance(TimeTableEntity rec) {
-        UpdateModalFragment fragment = new UpdateModalFragment();
+    public static UpdateDeleteModalFragment newInstance(TimeTableEntity rec) {
+        UpdateDeleteModalFragment fragment = new UpdateDeleteModalFragment();
         Bundle args = new Bundle();
         args.putSerializable("rec", rec);
         fragment.setArguments(args);
@@ -53,9 +57,7 @@ public class UpdateModalFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            this.rec = (TimeTableEntity) getArguments().getSerializable("rec");
-        }
+        if (getArguments() != null) this.rec = (TimeTableEntity) getArguments().getSerializable("rec");
 
         // 更新する際の値のデフォルト値をセット（更新する際の値はこれを使う）
         localDate = localDate.of(rec.dateTime.getYear(), rec.dateTime.getMonthValue(), rec.dateTime.getDayOfMonth());
@@ -65,7 +67,7 @@ public class UpdateModalFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_modal_update, container, false);
+        return inflater.inflate(R.layout.fragment_modal_update_delete, container, false);
     }
 
     @Override
@@ -73,7 +75,11 @@ public class UpdateModalFragment extends Fragment {
 
         this.view = view;
 
-        // 初期値セット
+        // 背景タップ：キーボードを下げる
+        layout = (FrameLayout) view.findViewById(R.id.modal_update);
+        layout.setOnTouchListener(new RemoveKeyboard());
+
+        // 各初期値セット
         setDefaultValue(view);
 
         // カレンダータップ：新たな日付を localDate にセット
@@ -91,9 +97,23 @@ public class UpdateModalFragment extends Fragment {
         // 更新ボタン：アップデート
         Button updateButton = view.findViewById(R.id.update_button);
         updateButton.setOnClickListener(new Update());
+
+        // 削除ボタン：delete
+        Button deleteButton = view.findViewById(R.id.delete_button);
+        deleteButton.setOnClickListener(new Delete());
     }
 
     // =======================  utility  ======================== //
+
+    // キーボードを下げる
+    class RemoveKeyboard implements View.OnTouchListener {
+        @Override
+        public boolean onTouch(android.view.View view, MotionEvent motionEvent) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(layout.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            return false;
+        }
+    }
 
     // デフォルト値セット
     public void setDefaultValue(View view) {
@@ -120,7 +140,7 @@ public class UpdateModalFragment extends Fragment {
     class SetLocalDate implements CalendarView.OnDateChangeListener {
         @Override
         public void onSelectedDayChange(@NonNull CalendarView calendarView, int year, int month, int date) {
-            localDate = localDate.of(year, month, date);
+            localDate = localDate.of(year, month, date).plusMonths(1);
         }
     }
 
@@ -175,22 +195,10 @@ public class UpdateModalFragment extends Fragment {
 
             // アップデート → adapter に通知
             updateRec();
-
-            // モーダル閉じる
-            closeModal();
         }
     }
 
-    // モーダル閉じる
-    public void closeModal() {
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .setReorderingAllowed(true)
-                .remove(fragmentManager.findFragmentByTag("UpdateModalFragment"))
-                .commit();
-    }
-
-    // Rec に値をセット
+    // Rec に値をセット(update)
     public void setRecNew() {
         // 時間取得　※ update_time(TextView) から取得
         TextView update_time = view.findViewById(R.id.update_time);
@@ -198,7 +206,6 @@ public class UpdateModalFragment extends Fragment {
         int setHour = Integer.parseInt(val.substring(0,2));
         int setMinute = Integer.parseInt(val.substring(3));
         LocalTime localTime = LocalTime.of(setHour, setMinute);
-        Log.d("LocalTime=======>", String.valueOf(localTime));
 
         // 日付・時間
         LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
@@ -208,12 +215,12 @@ public class UpdateModalFragment extends Fragment {
         TextView title = view.findViewById(R.id.update_title);
         String titleText = title.getText().toString();
 
-        rec.dateTime = localDateTime;
-        rec.title = titleText;
-        rec.isDone = switchMaterial.isChecked();
+        rec.setTitle(titleText);
+        rec.setDateTime(localDateTime);
+        rec.setIsDone(switchMaterial.isChecked());
     }
 
-    // dao からアップデート
+    // dao (update)
     public void updateRec() {
         // 別スレ生成 -> 開始
         HandlerThread handlerThread = new HandlerThread("Update");
@@ -229,12 +236,42 @@ public class UpdateModalFragment extends Fragment {
                 TimeTableDao timeTableDao = database.timeTableDao();
                 timeTableDao.update(rec);
 
-                TimeTableEntity newRec = timeTableDao.getTargetRec(rec.id);
+                // モーダル閉じる
+                getActivity().getSupportFragmentManager().popBackStack();
 
                 // DateFragment へ通知 → adapter を更新
                 getParentFragmentManager().setFragmentResult("closeModal", null);
             }
         });
+    }
+
+    // delete
+    class Delete implements View.OnClickListener {
+
+        @Override
+        public void onClick(View view) {
+            // 別スレ生成 -> 開始
+            HandlerThread handlerThread = new HandlerThread("Delete");
+            handlerThread.start();
+            //作成したHandlerThread(別スレ)内部のLooperを引数として、HandlerThread(のLooper)にメッセージを送るHandlerを生成する。
+            Handler handler = new Handler(handlerThread.getLooper());
+            //Handlerのpostメソッドでメッセージ(タスク：重たい処理)を送信する。
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(),
+                            AppDatabase.class, "TimeTable").build();
+                    TimeTableDao timeTableDao = database.timeTableDao();
+                    timeTableDao.delete(rec);
+
+                    // モーダル閉じる
+                    getActivity().getSupportFragmentManager().popBackStack();
+
+                    // DateFragment へ通知 → adapter を更新
+                    getParentFragmentManager().setFragmentResult("closeModal", null);
+                }
+            });
+        }
     }
 
     // 桁数をそろえる
