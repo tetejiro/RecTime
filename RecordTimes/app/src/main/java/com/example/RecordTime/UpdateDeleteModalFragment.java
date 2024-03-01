@@ -137,7 +137,7 @@ public class UpdateDeleteModalFragment extends Fragment {
     class SetLocalDate implements CalendarView.OnDateChangeListener {
         @Override
         public void onSelectedDayChange(@NonNull CalendarView calendarView, int year, int month, int date) {
-            LocalDate localDate = LocalDate.of(year, month, date).plusMonths(1);
+            LocalDate localDate = LocalDate.of(year, month + 1, date);
             LocalTime localTime = LocalTime.of(rec.getDateTime().getHour(), rec.getDateTime().getMinute());
             rec.setDateTime(LocalDateTime.of(localDate, localTime));
         }
