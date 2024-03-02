@@ -7,7 +7,7 @@
     android:layout_height="320dp"
     android:layout_gravity="center"
     android:background="@drawable/modal_border"
-    tools:context=".InsertModalFragment">
+    tools:context="hgsportfolio.example.RecordTime.InsertModalFragment">
 
     <TextView
         android:id="@+id/textView"

@@ -13,7 +13,7 @@
         android:theme="@style/Theme.RecordTime"
         tools:targetApi="33">
         <activity
-            android:name=".MainActivity"
+            android:name="hgsportfolio.example.RecordTime.MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan"
             android:enableOnBackInvokedCallback="true">
