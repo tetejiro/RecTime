@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.RecordTime'
+    namespace 'hgsportfolio.example.RecordTime'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.RecordTime"
+        applicationId "hgsportfolio.example.RecordTime"
         minSdk 26
         targetSdk 33
         versionCode 1
